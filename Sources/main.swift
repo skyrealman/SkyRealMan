@@ -130,12 +130,11 @@ routes.add(method: .get, uri: "/prepare", handler: {
 })
 routes.add(method: .post, uri: "/prepare", handler: {
     request, response in
-    guard let title = request.param(name: "title"), let body = request.param(name: "body") else{
-        response.render(template: "prepare", context: ["flash": "Missing title or body"])
+    guard let title = request.param(name: "title"), let body = request.param(name: "body"), !title.isEmpty, !body.isEmpty else{
+        response.render(template: "prepare", context: ["flash": "缺少标题或正文"])
         return
     }
     let dbHandler = DBOrm()
-
     dbHandler.setStory((title, body))
     response.redirect(path: "/story/\(title.transformToLatinStripDiacritics().slugify())")
 })

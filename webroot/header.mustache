@@ -19,3 +19,10 @@
             </nav>
             <h3 class = "text-muted"><a href="/">天真男的日志</a></h3>
         </div>
+{{#flash}}
+<div class = "alert alert-danger" role = "alert">
+    <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+<span class="sr-only">错误: </span>
+{{flash}}
+</div>
+{{/flash}}
