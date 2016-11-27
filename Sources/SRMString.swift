@@ -20,3 +20,12 @@ public extension String{
         return self
     }
 }
+
+public extension Date{
+    func getYear() -> Int?{
+        let date = NSDate()
+        let calendar = NSCalendar.current
+        let dateCom = calendar.dateComponents([.year, .month, .day, .hour, .minute], from: date as Date)
+        return dateCom.year
+    }
+}

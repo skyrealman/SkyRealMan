@@ -11,11 +11,7 @@ import SQLite
 import PerfectHTTP
 import PerfectMustache
 import SwiftString
-
-/*
-	These are the main Mustache handlers.
-	They are called as the handlers from the routes in main.swift
-*/
+import PerfectLogger
 
 
 struct ListHandler: MustachePageHandler { // all template handlers must inherit from PageHandler
@@ -37,6 +33,7 @@ struct ListHandler: MustachePageHandler { // all template handlers must inherit 
 			thisPost["synopsis"] = data[i]["synopsis"]
 			thisPost["titlesanitized"] = data[i]["title"]!.transformToLatinStripDiacritics().slugify()
 			ary.append(thisPost)
+            print(thisPost["title"]! as String)
 		}
 		values["posts"] = ary
 
@@ -91,40 +88,6 @@ struct StoryHandler: MustachePageHandler { // all template handlers must inherit
 			response.completed()
 		}
 	}
-}
-
-struct CategoryHandler: MustachePageHandler {
-    func extendValuesForResponse(context contxt: MustacheWebEvaluationContext, collector: MustacheEvaluationOutputCollector) {
-        var values = MustacheEvaluationContext.MapType()
-        let request = contxt.webRequest
-        let category = request.param(name: "category") ?? ""
-        if category.characters.count > 0 {
-            let dbHandler = DBOrm()
-            dbHandler.setCategory(category)
-        }
-
-        var ary = [Any]()
-        
-
-        let data = dbHandler.getCategory()
-        
-        for i in 0..<data.count{
-            var thisPos = [String: String]()
-            thisPos["name"] = data[i]["name"]
-            ary.append(thisPos)
-        }
-        values["categories"] = ary
-        
-        contxt.extendValues(with: values)
-        do {
-            try contxt.requestCompleted(withCollector: collector)
-        } catch {
-            let response = contxt.webResponse
-            response.status = .internalServerError
-            response.appendBody(string: "\(error)")
-            response.completed()
-        }
-    }
 }
 
 struct UploadHandler: MustachePageHandler{
