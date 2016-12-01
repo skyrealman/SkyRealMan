@@ -10,11 +10,11 @@
             <nav>
                 <ul class = "nav nav-pills pull-right">
                 {{^authenticated}}
-                <li role = "presentation"><a href="/admin/login">登录</a></li>
+                <li role = "presentation"><a href="/login">登录</a></li>
                 {{/authenticated}}
                 {{#authenticated}}
                 <li>
-                    <a href="/admin/logout">注销</a>
+                    <a href="/logout">注销</a>
                 </li>
                 {{/authenticated}}
                 </ul>

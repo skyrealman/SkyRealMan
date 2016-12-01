@@ -14,20 +14,9 @@ public func makeAdminRoutes() -> Routes{
     var routes = Routes()
     routes.add(method: .get, uri: "/admin/manage", handler: BlogAdmin.makeTag)
     
-    routes.add(method: .get, uri: "/admin/prepare", handler: {
-        request, response in
-        response.render(template: "/admin/prepare")
-    })
-    routes.add(method: .post, uri: "/admin/prepare", handler: {
-        request, response in
-        guard let title = request.param(name: "title"), let body = request.param(name: "body"), !title.isEmpty, !body.isEmpty else{
-            response.render(template: "admin/prepare", context: ["flash": "缺少标题或正文"])
-            return
-        }
-        let dbHandler = DBOrm()
-        dbHandler.setStory((title, body))
-        response.redirect(path: "/story/\(title.transformToLatinStripDiacritics().slugify())")
-    })
+    routes.add(method: .get, uri: "/admin/prepare", handler: BlogAdmin.makeStoryInsertGET)
+    routes.add(method: .post, uri: "/admin/prepare", handler: BlogAdmin.makeStoryInsertPOST)
+    
     routes.add(method: .get, uri: "/admin/check", handler: {
         request, response in
         response.setHeader(.contentType, value: "application/json")
@@ -43,9 +32,13 @@ public func makeAdminRoutes() -> Routes{
         }
         response.completed()
     })
-    routes.add(method: .get, uri: "/admin/login", handler: BlogAdmin.makeLogin)
-    routes.add(method: .get, uri: "/admin/logout", handler: AuthHandlersWeb.logoutHandler)
-    routes.add(method: .get, uri: "/admin/register", handler: BlogAdmin.makeRegister)
     
+    routes.add(method: .get, uri: "/login", handler: BlogAdmin.makeLoginGET)
+    routes.add(method: .post, uri: "/login", handler: BlogAdmin.makeLoginPOST)
+    
+    routes.add(method: .get, uri: "/logout", handler: AuthHandlersWeb.logoutHandler)
+    
+    routes.add(method: .get, uri: "/register", handler: BlogAdmin.makeRegisterGET)
+    routes.add(method: .post, uri: "/register", handler: BlogAdmin.makeRegisterPOST)
     return routes
 }

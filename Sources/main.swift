@@ -40,11 +40,11 @@ dbHandler.auth()
 
 //let apiRoute = "/api/v1/"
 
-let authWebRoutes = makeWebAuthRoutes()
+//let authWebRoutes = makeWebAuthRoutes()
 
 server.addRoutes(makeRoutes())
 server.addRoutes(makeAdminRoutes())
-server.addRoutes(authWebRoutes)
+//server.addRoutes(authWebRoutes)
 
 let httplogger = RequestLogger()
 
@@ -53,8 +53,8 @@ server.setResponseFilters([(httplogger, .low)])
 
 var authenticationConfig = AuthenticationConfig()
 authenticationConfig.include("/admin/*")
-authenticationConfig.exclude("/admin/login")
-authenticationConfig.exclude("/admin/register")
+authenticationConfig.exclude("/login")
+authenticationConfig.exclude("/register")
 
 server.documentRoot = "./webroot"
 

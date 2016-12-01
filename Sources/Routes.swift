@@ -13,9 +13,9 @@ import PerfectMustache
 public func makeRoutes() -> Routes {
     var routes = Routes()
     //首页
-    routes.add(method: .get, uri: "/index", handler: PageHandlers.makeHome)
+    routes.add(method: .get, uri: "/", handler: PageHandlers.makeHome)
     //列表
-    routes.add(method: .get, uris: ["/story","/story/{titleSanitized}"], handler: PageHandlers.makeStory)
+    routes.add(method: .get, uris: ["/story","/story/{titleSanitized}"], handler: PageHandlers.makeStoryQuery)
     
 
     return routes
