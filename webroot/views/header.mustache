@@ -1,7 +1,7 @@
 <html>
     <head>
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
-       <link href="/jumbotron-narrow.css" rel="stylesheet">
+       <link href="/views/jumbotron-narrow.css" rel="stylesheet">
         <title>{{title}}</title>
     </head>
     <body>
@@ -14,12 +14,16 @@
                 {{/authenticated}}
                 {{#authenticated}}
                 <li>
+                    <a href ="/admin/prepare">管理</a>
+                </li>
+                <li>
                     <a href="/logout">注销</a>
                 </li>
                 {{/authenticated}}
+
                 </ul>
             </nav>
-            <h3 class = "text-muted"><a href="/index">天真男的日志</a></h3>
+            <h3 class = "text-muted"><a href="/">天真男的日志</a></h3>
         </div>
 {{#flash}}
 <div class = "alert alert-danger" role = "alert">

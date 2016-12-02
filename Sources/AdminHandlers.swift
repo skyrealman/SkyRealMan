@@ -17,7 +17,10 @@ import TurnstileWeb
 
 public class BlogAdmin{
     open static func makeLoginGET(request: HTTPRequest, _ response: HTTPResponse){
-        response.render(template: "login")
+        let context = [
+            "year": Date().getYear() ?? 0
+        ]
+        response.render(template: "login", context: context)
     }
     open static func makeLoginPOST(request: HTTPRequest, _ response: HTTPResponse){
         guard let username = request.param(name: "username"), let password = request.param(name: "password") else{
@@ -33,7 +36,10 @@ public class BlogAdmin{
         }
     }
     open static func makeRegisterGET(request: HTTPRequest, _ response: HTTPResponse){
-        response.render(template: "register")
+        let context = [
+            "year": Date().getYear() ?? 0
+        ]
+        response.render(template: "register", context: context)
     }
     open static func makeRegisterPOST(request: HTTPRequest, _ response: HTTPResponse){
         guard let username = request.param(name: "username"), let password = request.param(name: "password") else{
@@ -79,7 +85,6 @@ public class BlogAdmin{
         ]
         
         response.render(template: "admin/manage", context: context)
-        response.redirect(path: "/admin/manage")
     }
     
     open static func makeStoryInsertGET(request: HTTPRequest, _ response: HTTPResponse){
