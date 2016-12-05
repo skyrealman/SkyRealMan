@@ -72,10 +72,10 @@ class DBOrm{
                 orderby: []
             )
             if(blog.rows().count > 0){
-                for i in 0..<blog.rows().count{
+                for item in blog.rows().reversed(){
                     var contentDict = [String: String]()
-                    contentDict["title"] = blog.rows()[i].title
-                    contentDict["synopsis"] = blog.rows()[i].synopsis
+                    contentDict["title"] = item.title
+                    contentDict["synopsis"] = item.synopsis
                     data.append(contentDict)
                     print(contentDict["synopsis"] ?? "null")
                 }
@@ -129,14 +129,15 @@ class DBOrm{
             print(error)
         }
     }
-    func getCategory() ->[[String: String]]{
-        var data = [[String: String]]()
+    func getCategory() ->[Any]{
+        var data = [Any]()
         do{
             let category = Category(connect!)
-            try category.select(columns: ["name"], whereclause: "", params: [], orderby: [])
+            try category.select(columns: ["id","name"], whereclause: "", params: [], orderby: [])
             if(category.rows().count > 0){
                 for i in 0..<category.rows().count{
-                    var contentDict = [String: String]()
+                    var contentDict = [String: Any]()
+                    contentDict["id"] = category.rows()[i].id
                     contentDict["name"] = category.rows()[i].name
                     data.append(contentDict)
                 }

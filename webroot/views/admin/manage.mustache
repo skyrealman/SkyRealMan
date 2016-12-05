@@ -1,12 +1,37 @@
 {{>../header}}
-<form method = "GET" action = "/admin/manage">
-添加分类:<input type = "text" name = "category" />
-<input type = "submit" value = "添加" />
+<form method = "POST" action = "/admin/manage">
+<div class="form-group">
+<div class="row">
+<div class="col-lg-2">
+<label for="title">添加分类</label>
+</div>
+<div class="col-lg-8">
+<input id="addTag" type="text" class="form-control" aria-label="..." placeholder="请输入新增分类">
+</div>
+<div class="col-lg-2">
+<button type = "submit" class="btn btn-primary">添加</button>
+</div>
+</div>
+</div>
 </form>
 <p>
-<table>
+<table class="table">
+<thead>
+<tr>
+<th>#</th>
+<th>分类名称</th>
+<th>操作</th>
+</tr>
+</thead>
 {{#categories}}
-<tr><th>{{name}}</th></tr>
+<tbody>
+<tr>
+<th>{{id}}</th>
+<th>{{name}}</th>
+<th><a href="#">编辑</a>  <a href="#">删除</a></th>
+</tr>
+
+</tbody>
 {{/categories}}
 </table>
 {{>../footer}}

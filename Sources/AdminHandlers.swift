@@ -14,7 +14,7 @@ import TurnstilePerfect
 import Turnstile
 import TurnstileCrypto
 import TurnstileWeb
-
+import PerfectLogger
 public class BlogAdmin{
     open static func makeLoginGET(request: HTTPRequest, _ response: HTTPResponse){
         let context = [
@@ -22,6 +22,7 @@ public class BlogAdmin{
         ]
         response.render(template: "login", context: context)
     }
+    
     open static func makeLoginPOST(request: HTTPRequest, _ response: HTTPResponse){
         guard let username = request.param(name: "username"), let password = request.param(name: "password") else{
             response.render(template: "login", context: ["flash": "请输入用户名和密码"])
@@ -35,12 +36,14 @@ public class BlogAdmin{
             response.render(template: "login", context: ["flash": "用户名或密码错误"])
         }
     }
+    
     open static func makeRegisterGET(request: HTTPRequest, _ response: HTTPResponse){
         let context = [
             "year": Date().getYear() ?? 0
         ]
         response.render(template: "register", context: context)
     }
+    
     open static func makeRegisterPOST(request: HTTPRequest, _ response: HTTPResponse){
         guard let username = request.param(name: "username"), let password = request.param(name: "password") else{
             response.render(template: "register", context: ["flash": "请输入用户名和密码"])
@@ -57,27 +60,51 @@ public class BlogAdmin{
             response.render(template: "register", context: ["flash": "未知错误"])
         }
     }
+    
     open static func makeLogout(request: HTTPRequest, _ response: HTTPResponse){
         request.user.logout()
         response.redirect(path: "/")
     }
     
-    open static func makeTag(request: HTTPRequest, _ response: HTTPResponse){
+    open static func makeTagGET(request: HTTPRequest, _ response: HTTPResponse){
+
+        let dbHandler = DBOrm()
+        let data = dbHandler.getCategory()
+
+        let context: [String: Any] = [
+            "categories": data,
+            "year": Date().getYear() ?? 0,
+            "accountID": request.user.authDetails?.account.uniqueID ?? "",
+            "authenticated": request.user.authenticated
+        ]
+        response.render(template: "admin/manage", context: context)
+    }
+    
+    open static func makeTagPOST(request: HTTPRequest, _ response: HTTPResponse){
         response.setHeader(.contentType, value: "text/html")
-        let category = request.param(name: "category") ?? ""
+        let dbHandler = DBOrm()
+        let data_f = dbHandler.getCategory()
+        
+        guard let category = request.param(name: "category"), category.trimmed() != "" else{
+            let contxt: [String: Any] = [
+                "categories": data_f,
+                "flash": "标签名不能为空",
+                "year": Date().getYear() ?? 0,
+                "accountID": request.user.authDetails?.account.uniqueID ?? "",
+                "authenticated": request.user.authenticated
+            ]
+            response.render(template: "admin/manage", context: contxt)
+            return
+
+        }
+        
         if category.characters.count > 0 {
-            let dbHandler = DBOrm()
             dbHandler.setCategory(category)
         }
-        var ary = [Any]()
         let data = dbHandler.getCategory()
-        for i in 0..<data.count{
-            var thisPos = [String: String]()
-            thisPos["name"] = data[i]["name"]
-            ary.append(thisPos)
-        }
+
         let context: [String: Any] = [
-            "categories": ary,
+            "categories": data,
             "year": Date().getYear() ?? 0,
             "accountID": request.user.authDetails?.account.uniqueID ?? "",
             "authenticated": request.user.authenticated
@@ -88,10 +115,13 @@ public class BlogAdmin{
     }
     
     open static func makeStoryInsertGET(request: HTTPRequest, _ response: HTTPResponse){
+        let dbHandler = DBOrm()
+        let tags = dbHandler.getCategory()
         let context: [String: Any] = [
             "accountID": request.user.authDetails?.account.uniqueID ?? "",
             "authenticated": request.user.authenticated,
-            "year":Date().getYear() ?? 0
+            "year": Date().getYear() ?? 0,
+            "tags": tags
         ]
         response.render(template: "admin/prepare", context: context)
     }

@@ -19,7 +19,8 @@ public class PageHandlers{
         var ary = [Any]()
         let dbHandler = DBOrm()
         let data = dbHandler.getList()
-        
+        let tags = dbHandler.getCategory()
+
         for i in 0..<data.count {
             var thisPost = [String:String]()
             thisPost["title"] = data[i]["title"]
@@ -27,15 +28,20 @@ public class PageHandlers{
             thisPost["titlesanitized"] = data[i]["title"]!.transformToLatinStripDiacritics().slugify()
             ary.append(thisPost)
         }
-
-        let context: [String: Any] = [
-            "posts": ary,
-            "year": Date().getYear() ?? 0,
-            "title": "天真男的日志",
-            "accountID": request.user.authDetails?.account.uniqueID ?? "",
-            "authenticated": request.user.authenticated
+        if tags.count > 0{
+            let context: [String: Any] = [
+                "posts": ary,
+                "year": Date().getYear() ?? 0,
+                "title": "天真男的日志",
+                "accountID": request.user.authDetails?.account.uniqueID ?? "",
+                "authenticated": request.user.authenticated,
+                "tags": tags
             ]
-        response.render(template: "index", context: context)
+            response.render(template: "index", context: context)
+        }else{
+            response.render(template: "index", context: ["flash": "没有配置分类"])
+        }
+        
     }
     open static func makeStoryQuery(request: HTTPRequest, _ response: HTTPResponse){
         var context: [String: Any]  = [String: Any]()

@@ -1,8 +1,28 @@
 {{>header}}
+<div class="container">
+<div class="row">
+<div class="col-sm-9">
+<div class="jumbotron">
+<h3><a href="#">置顶文章</a></h3>
+<p>这是一篇置顶文章</p>
+</div>
+<hr>
 <ul>
 {{#posts}}
 <li><a href="/story/{{titlesanitized}}">{{title}}</a></li>
 {{synopsis}}
 {{/posts}}
 </ul>
+</div>
+<div class="col-sm-3">
+<ul class="list-group">
+{{#tags}}
+<li class="list-group-item list-group-item-success">{{name}}</li>
+{{/tags}}
+</ul>
+</div>
+</div>
+</div>
+
+
 {{>footer}}

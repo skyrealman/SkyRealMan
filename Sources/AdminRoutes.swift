@@ -12,8 +12,8 @@ import PerfectMustache
 
 public func makeAdminRoutes() -> Routes{
     var routes = Routes()
-    routes.add(method: .get, uri: "/admin/manage", handler: BlogAdmin.makeTag)
-    
+    routes.add(method: .get, uri: "/admin/manage", handler: BlogAdmin.makeTagGET)
+    routes.add(method: .post, uri: "/admin/manage", handler: BlogAdmin.makeTagPOST)
     routes.add(method: .get, uri: "/admin/prepare", handler: BlogAdmin.makeStoryInsertGET)
     routes.add(method: .post, uri: "/admin/prepare", handler: BlogAdmin.makeStoryInsertPOST)
     
