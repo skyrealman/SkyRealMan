@@ -67,11 +67,27 @@ public class BlogAdmin{
     }
     
     open static func makeTagGET(request: HTTPRequest, _ response: HTTPResponse){
-
+        let page = request.urlVariables["page"] ?? "1"
         let dbHandler = DBOrm()
-        let data = dbHandler.getCategory()
-
+        let data = dbHandler.getCategoryByPage(page: page)
+        guard let tagCount = dbHandler.getCategoryCount() else{
+            let context: [String: Any] = [
+                "year": Date().getYear() ?? 0,
+                "accountID": request.user.authDetails?.account.uniqueID ?? "",
+                "authenticated": request.user.authenticated,
+                "flash": "未知错误，无法获取分类"
+            ]
+             response.render(template: "admin/manage", context: context)
+            return
+        }
+        //这里取分页数，每页到底多少条需要改动
+        let pageCount = Int(ceil(Double(tagCount)/10.0))
+        var countArr = [Any]()
+        for i in 0..<pageCount{
+            countArr.append(["page": i + 1])
+        }
         let context: [String: Any] = [
+            "count": countArr,
             "categories": data,
             "year": Date().getYear() ?? 0,
             "accountID": request.user.authDetails?.account.uniqueID ?? "",
@@ -83,11 +99,11 @@ public class BlogAdmin{
     open static func makeTagPOST(request: HTTPRequest, _ response: HTTPResponse){
         response.setHeader(.contentType, value: "text/html")
         let dbHandler = DBOrm()
-        let data_f = dbHandler.getCategory()
+        var data = dbHandler.getCategory()
         
         guard let category = request.param(name: "category"), category.trimmed() != "" else{
             let contxt: [String: Any] = [
-                "categories": data_f,
+                "categories": data,
                 "flash": "标签名不能为空",
                 "year": Date().getYear() ?? 0,
                 "accountID": request.user.authDetails?.account.uniqueID ?? "",
@@ -101,7 +117,7 @@ public class BlogAdmin{
         if category.characters.count > 0 {
             dbHandler.setCategory(category)
         }
-        let data = dbHandler.getCategory()
+        data = dbHandler.getCategory()
 
         let context: [String: Any] = [
             "categories": data,

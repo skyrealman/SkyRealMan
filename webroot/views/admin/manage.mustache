@@ -6,7 +6,7 @@
 <label for="title">添加分类</label>
 </div>
 <div class="col-lg-8">
-<input id="addTag" type="text" class="form-control" aria-label="..." placeholder="请输入新增分类">
+<input id="addTag" type="text" class="form-control" name="category" aria-label="..." placeholder="请输入新增分类">
 </div>
 <div class="col-lg-2">
 <button type = "submit" class="btn btn-primary">添加</button>
@@ -34,4 +34,24 @@
 </tbody>
 {{/categories}}
 </table>
+
+<nav aria-label="..." style="text-align: right">
+<ul class="pagination">
+<li>
+<a href ="#" aria-label="Previous">
+<span aria-hidden="true"><<</span>
+</a>
+</li>
+{{#count}}
+<li>
+<a href="/admin/manage/page/{{page}}">{{page}}</a>
+</li>
+<li>
+{{/count}}
+<a href="#" aria-label="Next">
+<span sria-hidden="true">>></span>
+</a>
+</li>
+</ul></nav>
+
 {{>../footer}}

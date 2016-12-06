@@ -135,10 +135,10 @@ class DBOrm{
             let category = Category(connect!)
             try category.select(columns: ["id","name"], whereclause: "", params: [], orderby: [])
             if(category.rows().count > 0){
-                for i in 0..<category.rows().count{
+                for item in category.rows(){
                     var contentDict = [String: Any]()
-                    contentDict["id"] = category.rows()[i].id
-                    contentDict["name"] = category.rows()[i].name
+                    contentDict["id"] = item.id
+                    contentDict["name"] = item.name
                     data.append(contentDict)
                 }
             }
@@ -154,5 +154,38 @@ class DBOrm{
         }catch{
             print(error)
         }
+    }
+    func getCategoryCount() -> Int?{
+        var count: Int?
+        do {
+            let category = Category(connect!)
+            try category.findAll()
+            count = category.rows().count
+        }catch{
+            print(error)
+        }
+        return count
+    }
+    func getCategoryByPage(page: String) ->[Any]{
+        let numPerPage = 10
+        let limit = 10
+        let thisCursor = StORMCursor(limit: limit, offset: (Int(page)! - 1) * numPerPage)
+        var data = [Any]()
+        do{
+            let category = Category(connect!)
+            try category.select(columns:["id", "name"], whereclause: "", params: [], orderby: [], cursor: thisCursor, joins: [], having: [], groupBy: [])
+            print(category.rows().count)
+            if(category.rows().count > 0){
+                for item in category.rows(){
+                    var contentDict = [String: Any]()
+                    contentDict["id"] = item.id
+                    contentDict["name"] = item.name
+                    data.append(contentDict)
+                }
+            }
+        }catch{
+            print(error)
+        }
+        return data
     }
 }

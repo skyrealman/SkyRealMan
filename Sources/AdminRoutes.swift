@@ -16,7 +16,7 @@ public func makeAdminRoutes() -> Routes{
     routes.add(method: .post, uri: "/admin/manage", handler: BlogAdmin.makeTagPOST)
     routes.add(method: .get, uri: "/admin/prepare", handler: BlogAdmin.makeStoryInsertGET)
     routes.add(method: .post, uri: "/admin/prepare", handler: BlogAdmin.makeStoryInsertPOST)
-    
+    routes.add(method: .get, uri: "/admin/manage/page/{page}", handler: BlogAdmin.makeTagGET)
     routes.add(method: .get, uri: "/admin/check", handler: {
         request, response in
         response.setHeader(.contentType, value: "application/json")
