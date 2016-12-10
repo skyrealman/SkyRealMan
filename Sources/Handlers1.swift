@@ -31,7 +31,6 @@ public class PageHandlers{
         if tags.count > 0{
             let context: [String: Any] = [
                 "posts": ary,
-                "year": Date().getYear() ?? 0,
                 "title": "天真男的日志",
                 "accountID": request.user.authDetails?.account.uniqueID ?? "",
                 "authenticated": request.user.authenticated,
@@ -59,7 +58,6 @@ public class PageHandlers{
             context["user_name"] = data["user_name"]
             context["category_name"] = data["category_name"]
         }
-        context["year"] = Date().getYear() ?? 0
         context["accountID"] = request.user.authDetails?.account.uniqueID ?? ""
         context["authenticated"] = request.user.authenticated
         response.render(template: "story", context: context)

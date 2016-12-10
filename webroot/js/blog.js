@@ -4,3 +4,7 @@ $(function(){
     $("#addTag").val($(this).text());
   });
 });
+$(document).ready(function(){
+   var myDate = new Date();
+   $("#year").text(myDate.getYear() + 1900);
+});

@@ -17,10 +17,7 @@ import TurnstileWeb
 import PerfectLogger
 public class BlogAdmin{
     open static func makeLoginGET(request: HTTPRequest, _ response: HTTPResponse){
-        let context = [
-            "year": Date().getYear() ?? 0
-        ]
-        response.render(template: "login", context: context)
+        response.render(template: "login")
     }
     
     open static func makeLoginPOST(request: HTTPRequest, _ response: HTTPResponse){
@@ -38,10 +35,7 @@ public class BlogAdmin{
     }
     
     open static func makeRegisterGET(request: HTTPRequest, _ response: HTTPResponse){
-        let context = [
-            "year": Date().getYear() ?? 0
-        ]
-        response.render(template: "register", context: context)
+        response.render(template: "register")
     }
     
     open static func makeRegisterPOST(request: HTTPRequest, _ response: HTTPResponse){
@@ -69,25 +63,15 @@ public class BlogAdmin{
     open static func makeTagGET(request: HTTPRequest, _ response: HTTPResponse){
         let page = request.urlVariables["page"] ?? "1"
         let dbHandler = DBOrm()
-        let data = dbHandler.getCategoryByPage(page: page)
-        guard let tagCount = dbHandler.getCategoryCount() else{
-            let context: [String: Any] = [
-                "year": Date().getYear() ?? 0,
-                "accountID": request.user.authDetails?.account.uniqueID ?? "",
-                "authenticated": request.user.authenticated,
-                "flash": "未知错误，无法获取分类"
-            ]
-             response.render(template: "admin/manage", context: context)
+        guard page.isNumeric() else{
+            response.render(template: "admin/manage", context: ["flash": "页码不合法","count": dbHandler.getPageContext()])
             return
         }
-        //这里取分页数，每页到底多少条需要改动
-        let pageCount = Int(ceil(Double(tagCount)/10.0))
-        var countArr = [Any]()
-        for i in 0..<pageCount{
-            countArr.append(["page": i + 1])
-        }
+        
+        let data = dbHandler.getCategoryByPage(page: page)
+    
         let context: [String: Any] = [
-            "count": countArr,
+            "count": dbHandler.getPageContext(),
             "categories": data,
             "year": Date().getYear() ?? 0,
             "accountID": request.user.authDetails?.account.uniqueID ?? "",
@@ -103,9 +87,9 @@ public class BlogAdmin{
         
         guard let category = request.param(name: "category"), category.trimmed() != "" else{
             let contxt: [String: Any] = [
+                "count": dbHandler.getPageContext(),
                 "categories": data,
                 "flash": "标签名不能为空",
-                "year": Date().getYear() ?? 0,
                 "accountID": request.user.authDetails?.account.uniqueID ?? "",
                 "authenticated": request.user.authenticated
             ]
@@ -117,11 +101,11 @@ public class BlogAdmin{
         if category.characters.count > 0 {
             dbHandler.setCategory(category)
         }
-        data = dbHandler.getCategory()
+        data = dbHandler.getCategoryByPage(page: String(dbHandler.getCategoryPageCount()))
 
         let context: [String: Any] = [
+            "count": dbHandler.getPageContext(),
             "categories": data,
-            "year": Date().getYear() ?? 0,
             "accountID": request.user.authDetails?.account.uniqueID ?? "",
             "authenticated": request.user.authenticated
 
@@ -136,7 +120,6 @@ public class BlogAdmin{
         let context: [String: Any] = [
             "accountID": request.user.authDetails?.account.uniqueID ?? "",
             "authenticated": request.user.authenticated,
-            "year": Date().getYear() ?? 0,
             "tags": tags
         ]
         response.render(template: "admin/prepare", context: context)
@@ -150,4 +133,5 @@ public class BlogAdmin{
         dbHandler.setStory((title, body))
         response.redirect(path: "/story/\(title.transformToLatinStripDiacritics().slugify())")
     }
+
 }

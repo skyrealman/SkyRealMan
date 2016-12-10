@@ -15,6 +15,7 @@ import SQLiteStORM
 import PerfectTurnstileSQLite
 import PerfectLogger
 import PerfectRequestLogger
+import Foundation
 // Create HTTP server.
 let server = HTTPServer()
 
@@ -62,7 +63,7 @@ let authFilter = AuthFilter(authenticationConfig)
 
 server.setRequestFilters([pturnstile.requestFilter])
 server.setResponseFilters([pturnstile.responseFilter])
-
+server.setResponseFilters([(OtherFilter(), .high),(Filter404(), .high)])
 server.setRequestFilters([(authFilter, .high)])
 
 server.serverPort = UInt16(httpPort)

@@ -155,8 +155,8 @@ class DBOrm{
             print(error)
         }
     }
-    func getCategoryCount() -> Int?{
-        var count: Int?
+    func getCategoryCount() -> Int{
+        var count: Int = 0
         do {
             let category = Category(connect!)
             try category.findAll()
@@ -166,6 +166,24 @@ class DBOrm{
         }
         return count
     }
+    func getCategoryPageCount() -> Int{
+        let tagCount = self.getCategoryCount()
+        var pageCount = 0
+        if tagCount > 0 {
+            pageCount = Int(ceil(Double(tagCount)/10.0))
+            return pageCount
+        }
+        return pageCount
+    }
+    
+    func getPageContext() -> [Any]{
+        var countArr = [Any]()
+        for i in 0..<self.getCategoryPageCount(){
+            countArr.append(["page": 1 + i])
+        }
+        return countArr
+    }
+    
     func getCategoryByPage(page: String) ->[Any]{
         let numPerPage = 10
         let limit = 10
@@ -174,7 +192,7 @@ class DBOrm{
         do{
             let category = Category(connect!)
             try category.select(columns:["id", "name"], whereclause: "", params: [], orderby: [], cursor: thisCursor, joins: [], having: [], groupBy: [])
-            print(category.rows().count)
+
             if(category.rows().count > 0){
                 for item in category.rows(){
                     var contentDict = [String: Any]()

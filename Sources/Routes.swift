@@ -16,7 +16,12 @@ public func makeRoutes() -> Routes {
     routes.add(method: .get, uri: "/", handler: PageHandlers.makeHome)
     //列表
     routes.add(method: .get, uris: ["/story","/story/{titleSanitized}"], handler: PageHandlers.makeStoryQuery)
-    
+    routes.add(method: .get, uri: "/files/**", handler: {
+        request, response in
+        request.path = request.urlVariables[routeTrailingWildcardKey]!
+        let handler = StaticFileHandler(documentRoot: "/Users/songzhen/Documents/swift/perfect/skyrealman/webroot/pic")
+        handler.handleRequest(request: request, response: response)
+    })
 
     return routes
 }
