@@ -10,31 +10,30 @@ import StORM
 import SQLiteStORM
 
 open class Blog: SQLiteStORM{
-    public var id: Int?
-    public var title: String?
-    public var titlesanitized: String?
-    public var synopsis: String?
-    public var body: String?
-    public var posttime: String?
-    public var authorid: String?
-    public var categoryid: Int?
-    public var readtimes: Int?
+    public var id: Int = 0
+    public var title: String = ""
+    public var titlesanitized: String = ""
+    public var synopsis: String = ""
+    public var body: String = ""
+    public var posttime: String = ""
+    public var authorid: String = ""
+    public var categoryid: Int = 0
+    public var readtimes: Int = 0
     
     override open func table() -> String{
         return "blog"
     }
     override open func to(_ this: StORMRow){
-        title = this.data["title"] as! String?
+        title = this.data["title"] as? String ?? ""
         
-        synopsis = this.data["synopsis"] as! String?
-        titlesanitized = this.data["titlesanitized"] as! String?
-        
-        body = this.data["body"] as! String?
-        posttime = this.data["posttime"] as! String?
-        authorid = this.data["authorid"] as! String?
-        categoryid = this.data["categoryid"] as! Int?
-        readtimes = this.data["readtimes"] as! Int?
-        id = this.data["id"] as! Int?
+        synopsis = this.data["synopsis"] as? String ?? ""
+        titlesanitized = this.data["titlesanitized"] as? String ?? ""
+        body = this.data["body"] as? String ?? ""
+        posttime = this.data["posttime"] as? String ?? ""
+        authorid = this.data["authorid"] as? String ?? ""
+        categoryid = this.data["categoryid"] as? Int ?? 0
+        readtimes = this.data["readtimes"] as? Int ?? 0
+        id = this.data["id"] as? Int ?? 0
     }
     func rows() ->[Blog]{
         var rows = [Blog]()

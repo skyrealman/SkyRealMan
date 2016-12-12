@@ -13,24 +13,16 @@ import SQLiteStORM
 import SwiftString
 import PerfectLogger
 import Foundation
-
+import PerfectMustache
 public class PageHandlers{
     open static func makeHome(request: HTTPRequest, _ response: HTTPResponse){
-        var ary = [Any]()
         let dbHandler = DBOrm()
         let data = dbHandler.getList()
         let tags = dbHandler.getCategory()
 
-        for i in 0..<data.count {
-            var thisPost = [String:String]()
-            thisPost["title"] = data[i]["title"]
-            thisPost["synopsis"] = data[i]["synopsis"]
-            thisPost["titlesanitized"] = data[i]["title"]!.transformToLatinStripDiacritics().slugify()
-            ary.append(thisPost)
-        }
         if tags.count > 0{
             let context: [String: Any] = [
-                "posts": ary,
+                "posts": data,
                 "title": "天真男的日志",
                 "accountID": request.user.authDetails?.account.uniqueID ?? "",
                 "authenticated": request.user.authenticated,
@@ -62,5 +54,17 @@ public class PageHandlers{
         context["authenticated"] = request.user.authenticated
         response.render(template: "story", context: context)
     }
-
+    
+    open static func makeStoryListByYear(request: HTTPRequest, response: HTTPResponse){
+        var context: [String: Any] = [String: Any]()
+        let dbHandler = DBOrm()
+        let years: [String] = dbHandler.getBlogYears()
+        for year in years{
+            let data = dbHandler.getStoryListForYear(year: year)
+            context[year] = data
+        }
+        context["accountID"] = request.user.authDetails?.account.uniqueID ?? ""
+        context["authenticated"] = request.user.authenticated
+        response.render(template: "list", context: context)
+    }
 }

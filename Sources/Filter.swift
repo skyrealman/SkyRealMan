@@ -15,7 +15,17 @@ struct OtherFilter: HTTPResponseFilter{
         callback(.continue)
     }
     func filterBody(response: HTTPResponse, callback: (HTTPResponseFilterResult) -> ()){
-        //let str = String(bytes:response.bodyBytes, encoding:String.Encoding.utf8)
+        guard let str = String(bytes:response.bodyBytes, encoding:String.Encoding.utf8) else{
+            return
+        }
+        
+        if (str.contains("#$year$#")){
+            response.setBody(string: "")
+            let tmp =  str.replacingOccurrences(of: "#$year$#", with: String(describing: Date().getYear() ?? 0))
+            for char in tmp.utf8{
+                response.bodyBytes += [char]
+            }
+        }
         callback(.continue)
     }
 }

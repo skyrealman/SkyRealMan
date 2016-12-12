@@ -46,7 +46,7 @@ class DBOrm{
                 timeFormatter.dateFormat = "yyyy-MM-dd"
                 let strNowTime = timeFormatter.string(from: date as Date) as String
                 blog.id = try blog.insert(cols: ["title", "titlesanitized", "synopsis", "body", "posttime", "authorid", "categoryid", "readtimes"], params: [blog_data[i][0], blog_data[i][0].transformToLatinStripDiacritics().slugify(), blog_data[i][1], blog_data[i][2], strNowTime, "nhqtfn--2TIKAAAAAAAAAA", 3, 0]
-                    ) as? Int
+                    ) as! Int
             }
 
         }catch{
@@ -61,12 +61,12 @@ class DBOrm{
         tokenStore?.setup()
     }
     
-    func getList() -> [[String: String]]{
-        var data = [[String: String]]()
+    func getList() -> [Any]{
+        var data = [Any]()
         do{
             let blog = Blog(connect!)
             try blog.select(
-                columns: ["title", "synopsis"],
+                columns: ["title", "titlesanitized","synopsis"],
                 whereclause: "",
                 params: [],
                 orderby: []
@@ -75,9 +75,11 @@ class DBOrm{
                 for item in blog.rows().reversed(){
                     var contentDict = [String: String]()
                     contentDict["title"] = item.title
+                    contentDict["titlesanitized"] = item.titlesanitized
                     contentDict["synopsis"] = item.synopsis
+                    
                     data.append(contentDict)
-                    print(contentDict["synopsis"] ?? "null")
+                    print(contentDict["titlesanitized"] ?? "null")
                 }
 
             }
@@ -93,7 +95,7 @@ class DBOrm{
             let blog = Blog(connect!)
             let category = Category(connect!)
             try blog.select(columns: ["title", "body", "posttime", "authorid", "categoryid"], whereclause: "titlesanitized = :1", params: [storyid], orderby: [])
-            try category.select(columns: ["name"], whereclause: "id = :1", params:[blog.rows()[0].categoryid!], orderby: [])
+            try category.select(columns: ["name"], whereclause: "id = :1", params:[blog.rows()[0].categoryid], orderby: [])
             data["title"] = blog.rows()[0].title
             data["body"] = blog.rows()[0].body
             data["posttime"] = blog.rows()[0].posttime
@@ -124,7 +126,7 @@ class DBOrm{
             }
             let posttime = strNowTime
             let authorid = "nhqtfn--2TIKAAAAAAAAAA"
-            blog.id = try blog.insert(cols: ["title", "titlesanitized", "synopsis", "body", "posttime", "authorid", "categoryid", "readtimes"], params: [title, titlesanitized, synopsis, body, posttime, authorid, 3, 0]) as? Int
+            blog.id = try blog.insert(cols: ["title", "titlesanitized", "synopsis", "body", "posttime", "authorid", "categoryid", "readtimes"], params: [title, titlesanitized, synopsis, body, posttime, authorid, 3, 0]) as! Int
         }catch{
             print(error)
         }
@@ -205,5 +207,46 @@ class DBOrm{
             print(error)
         }
         return data
+    }
+    func getBlogYears() -> [String]{
+        var yearArr = [String]()
+
+        do{
+            let blog = Blog(connect!)
+            try blog.select(columns: ["posttime"], whereclause: "", params: [], orderby: [])
+            for item in blog.rows(){
+                let date = item.posttime.split("-")
+                if(!yearArr.contains(date[0])){
+                    yearArr.append((date[0]))
+                }
+            }
+        }catch{
+            print(error)
+        }
+        return yearArr
+    }
+    func getStoryListForYear(year: String) ->[Any]{
+        var storyArr = [Any]()
+        do{
+            let blog = Blog(connect!)
+            if(year == "All"){
+                try blog.select(columns: ["title","categoryid","readtimes","posttime"], whereclause: "", params: [], orderby: [])
+            }else{
+                let wString = "posttime like '%" + year + "%'"
+                try blog.select(columns: ["title","categoryid","readtimes","posttime"], whereclause: wString, params: [], orderby: [])
+            }
+
+            for item in blog.rows(){
+                var contentDict = [String: Any]()
+                contentDict["title"] = item.title
+                contentDict["categoryid"] = item.categoryid
+                contentDict["readtimes"] = item.readtimes
+                contentDict["posttime"] = item.posttime
+                storyArr.append(contentDict)
+            }
+        }catch{
+            print(error)
+        }
+        return storyArr
     }
 }

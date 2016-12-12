@@ -14,6 +14,7 @@ public func makeRoutes() -> Routes {
     var routes = Routes()
     //首页
     routes.add(method: .get, uri: "/", handler: PageHandlers.makeHome)
+    routes.add(method: .get, uri: "/list", handler: PageHandlers.makeStoryListByYear)
     //列表
     routes.add(method: .get, uris: ["/story","/story/{titleSanitized}"], handler: PageHandlers.makeStoryQuery)
     routes.add(method: .get, uri: "/files/**", handler: {
