@@ -73,7 +73,6 @@ public class BlogAdmin{
         let context: [String: Any] = [
             "count": dbHandler.getPageContext(),
             "categories": data,
-            "year": Date().getYear() ?? 0,
             "accountID": request.user.authDetails?.account.uniqueID ?? "",
             "authenticated": request.user.authenticated
         ]
