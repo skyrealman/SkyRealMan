@@ -45,7 +45,7 @@ class DBOrm{
                 let timeFormatter = DateFormatter()
                 timeFormatter.dateFormat = "yyyy-MM-dd"
                 let strNowTime = timeFormatter.string(from: date as Date) as String
-                blog.id = try blog.insert(cols: ["title", "titlesanitized", "synopsis", "body", "posttime", "authorid", "categoryid", "readtimes"], params: [blog_data[i][0], blog_data[i][0].transformToLatinStripDiacritics().slugify(), blog_data[i][1], blog_data[i][2], strNowTime, "nhqtfn--2TIKAAAAAAAAAA", 3, 0]
+                blog.id = try blog.insert(cols: ["title", "titlesanitized", "synopsis", "body", "posttime", "authorid", "categoryid", "readtimes", "istopped"], params: [blog_data[i][0], blog_data[i][0].transformToLatinStripDiacritics().slugify(), blog_data[i][1], blog_data[i][2], strNowTime, "nhqtfn--2TIKAAAAAAAAAA", 3, 0, 0]
                     ) as! Int
             }
 
@@ -126,7 +126,7 @@ class DBOrm{
             }
             let posttime = strNowTime
             let authorid = "nhqtfn--2TIKAAAAAAAAAA"
-            blog.id = try blog.insert(cols: ["title", "titlesanitized", "synopsis", "body", "posttime", "authorid", "categoryid", "readtimes"], params: [title, titlesanitized, synopsis, body, posttime, authorid, 3, 0]) as! Int
+            blog.id = try blog.insert(cols: ["title", "titlesanitized", "synopsis", "body", "posttime", "authorid", "categoryid", "readtimes", "istopped"], params: [title, titlesanitized, synopsis, body, posttime, authorid, 3, 0, 0]) as! Int
         }catch{
             print(error)
         }

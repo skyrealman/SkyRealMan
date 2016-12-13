@@ -28,9 +28,9 @@ public class PageHandlers{
                 "authenticated": request.user.authenticated,
                 "tags": tags
             ]
-            response.render(template: "index", context: context)
+            response.renderWithDate(template: "index", context: context)
         }else{
-            response.render(template: "index", context: ["flash": "没有配置分类"])
+            response.renderWithDate(template: "index", context: ["flash": "没有配置分类"])
         }
         
     }
@@ -52,19 +52,22 @@ public class PageHandlers{
         }
         context["accountID"] = request.user.authDetails?.account.uniqueID ?? ""
         context["authenticated"] = request.user.authenticated
-        response.render(template: "story", context: context)
+        response.renderWithDate(template: "story", context: context)
     }
     
     open static func makeStoryListByYear(request: HTTPRequest, response: HTTPResponse){
         var context: [String: Any] = [String: Any]()
         let dbHandler = DBOrm()
         let years: [String] = dbHandler.getBlogYears()
+        var contentDict: [String: Any] = [String: Any]()
         for year in years{
             let data = dbHandler.getStoryListForYear(year: year)
-            context[year] = data
+            contentDict["year"] = year
+            contentDict["blog"] = data
         }
+        context["data"] = contentDict
         context["accountID"] = request.user.authDetails?.account.uniqueID ?? ""
         context["authenticated"] = request.user.authenticated
-        response.render(template: "list", context: context)
+        response.renderWithDate(template: "list", context: context)
     }
 }

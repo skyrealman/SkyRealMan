@@ -19,6 +19,7 @@ open class Blog: SQLiteStORM{
     public var authorid: String = ""
     public var categoryid: Int = 0
     public var readtimes: Int = 0
+    public var isTopped: Int = 0
     
     override open func table() -> String{
         return "blog"
@@ -33,6 +34,7 @@ open class Blog: SQLiteStORM{
         authorid = this.data["authorid"] as? String ?? ""
         categoryid = this.data["categoryid"] as? Int ?? 0
         readtimes = this.data["readtimes"] as? Int ?? 0
+        isTopped = this.data["istopped"] as? Int ?? 0
         id = this.data["id"] as? Int ?? 0
     }
     func rows() ->[Blog]{
@@ -47,7 +49,7 @@ open class Blog: SQLiteStORM{
     
     public func setup(){
         do{
-            try sqlExec("CREATE TABLE IF NOT EXISTS blog (id INTEGER PRIMARY KEY NOT NULL, title TEXT, titlesanitized TEXT, synopsis TEXT, body TEXT, posttime TEXT, authorid TEXT REFERENCES users(uniqueID) ON DELETE CASCADE, categoryid INTEGER REFERENCES category(id) ON DELETE CASCADE, readtimes INTEGER)")
+            try sqlExec("CREATE TABLE IF NOT EXISTS blog (id INTEGER PRIMARY KEY NOT NULL, title TEXT, titlesanitized TEXT, synopsis TEXT, body TEXT, posttime TEXT, authorid TEXT REFERENCES users(uniqueID) ON DELETE CASCADE, categoryid INTEGER REFERENCES category(id) ON DELETE CASCADE, readtimes INTEGER, istopped INTEGER)")
         }catch{
             print(error)
         }

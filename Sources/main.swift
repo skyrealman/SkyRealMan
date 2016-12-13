@@ -63,7 +63,7 @@ let authFilter = AuthFilter(authenticationConfig)
 
 server.setRequestFilters([pturnstile.requestFilter])
 server.setResponseFilters([pturnstile.responseFilter])
-server.setResponseFilters([(OtherFilter(), .high),(Filter404(), .high)])
+server.setResponseFilters([(Filter404(), .high)])
 server.setRequestFilters([(authFilter, .high)])
 
 server.serverPort = UInt16(httpPort)
