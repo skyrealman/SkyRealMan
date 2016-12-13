@@ -40,5 +40,6 @@ public func makeAdminRoutes() -> Routes{
     
     routes.add(method: .get, uri: "/register", handler: BlogAdmin.makeRegisterGET)
     routes.add(method: .post, uri: "/register", handler: BlogAdmin.makeRegisterPOST)
+    routes.add(method: .get, uri: "/admin/manage/delete/{tag}", handler: BlogAdmin.deleteTag)
     return routes
 }

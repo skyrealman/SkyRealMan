@@ -152,7 +152,7 @@ class DBOrm{
     func setCategory(_ name: String){
         do{
             let category = Category(connect!)
-            category.id = try category.insert(cols: ["name"], params: [name]) as? Int
+            category.id = try category.insert(cols: ["name"], params: [name]) as! Int
         }catch{
             print(error)
         }
@@ -248,5 +248,16 @@ class DBOrm{
             print(error)
         }
         return storyArr
+    }
+    func deleteTag(tag: String){
+        do{
+            let category = Category(connect!)
+            try category.select(columns: ["id"], whereclause: "name = $1", params: [tag], orderby: [])
+            for item in category.rows(){
+                try category.delete(id: item.id)
+            }
+            }catch{
+                print(error)
+            }
     }
 }

@@ -10,15 +10,15 @@ import StORM
 import SQLiteStORM
 
 open class Category: SQLiteStORM{
-    public var id: Int?
-    public var name: String?
+    public var id: Int = 0
+    public var name: String = ""
     
     override open func table() -> String{
         return "category"
     }
     override open func to(_ this: StORMRow){
-        id = this.data["id"] as! Int?
-        name = this.data["name"] as! String?
+        id = this.data["id"] as? Int ?? 0
+        name = this.data["name"] as? String ?? ""
     }
     
     func rows() -> [Category]{

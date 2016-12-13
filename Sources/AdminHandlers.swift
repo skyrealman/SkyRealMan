@@ -69,7 +69,7 @@ public class BlogAdmin{
         }
         
         let data = dbHandler.getCategoryByPage(page: page)
-    
+
         let context: [String: Any] = [
             "count": dbHandler.getPageContext(),
             "categories": data,
@@ -132,5 +132,11 @@ public class BlogAdmin{
         dbHandler.setStory((title, body))
         response.redirect(path: "/story/\(title.transformToLatinStripDiacritics().slugify())")
     }
-
+    open static func deleteTag(request: HTTPRequest, _ response: HTTPResponse){
+        let dbHandler = DBOrm()
+        let rmTag = request.urlVariables["tag"] ?? ""
+        dbHandler.deleteTag(tag: rmTag)
+        response.redirect(path: "/admin/manage")
+        
+    }
 }

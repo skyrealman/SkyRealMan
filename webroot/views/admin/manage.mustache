@@ -1,4 +1,11 @@
 {{>../header}}
+
+<ul class="nav nav-tabs">
+<li role="presentation"><a href="/admin/prepare">编写日志</a></li>
+<li role="presentation"><a href="#">管理日志</a></li>
+<li role="presentation" class="active"><a href="#">管理分类</a></li>
+</ul>
+<br>
 <form method = "POST" action = "/admin/manage">
 <div class="form-group">
 <div class="row">
@@ -28,7 +35,9 @@
 <tr>
 <th>{{id}}</th>
 <th>{{name}}</th>
-<th><a href="#">编辑</a>  <a href="#">删除</a></th>
+<th><a class="btn btn-info btn-xs" href="#">编辑</a>&ensp;
+<a class="btn btn-info btn-xs" href="/admin/manage/delete/{{name}}" onClick="return confirm('确认删除?')">删除</a>
+</th>
 </tr>
 
 </tbody>
