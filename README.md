@@ -1,17 +1,23 @@
 # 天真男的博客
 ## 简介
 
-本博客是基于swift开源框架Perfect搭建，后端完全使用Perfect，依赖PerfectHTTP, PerfectMustache，PerfectSQLite，PerfectLogger等模块，同时依赖StORM，SQLiteStORM等ORM模块；前端仅使用Bootstrap框架构建。
+基于swift开源框架Perfect搭建的简易博客系统，仅为掌握Perfect框架的相关内容。后端完全使用Perfect，依赖PerfectHTTP, PerfectMustache，PerfectSQLite，PerfectLogger等模块，同时依赖StORM，SQLiteStORM等ORM模块；前端使用Bootstrap框架构建,部分依赖jquery。
 ## 功能
 
 ### 展示
 
 #### 综合浏览
+由置顶文章、最新文章与分类三部分组成
 #### 列表浏览
+按年度检索所有文章并完全列出
 #### 分类检索
+按分类检索所有文章并完全列出
 ### 管理
 #### 用户体系
+实现了用户注册与登录，并设置了登录可见内容的路由
 #### 撰写博客
+编写博客，可选择分类，设置是否置顶、是否评论等功能，可添加图片、影音等附件
 #### 管理博客
-#### 管理分类
+撰写博客、管理博客、管理分类
 #### 文件上载
+可在博客中上载图片或影音文件作为附件插入文中
