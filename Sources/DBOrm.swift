@@ -61,12 +61,12 @@ class DBOrm{
         tokenStore?.setup()
     }
     
-    func getList() -> [Any]{
+    func getViewList() -> [Any]{
         var data = [Any]()
         do{
             let blog = Blog(connect!)
             try blog.select(
-                columns: ["title", "titlesanitized","synopsis"],
+                columns: ["title", "posttime","categoryid"],
                 whereclause: "",
                 params: [],
                 orderby: []
@@ -82,6 +82,40 @@ class DBOrm{
                     print(contentDict["titlesanitized"] ?? "null")
                 }
 
+            }
+        }catch{
+            print(error)
+        }
+        return data
+    }
+    func getManageList() -> [Any]{
+        var data = [Any]()
+        do{
+            let blog = Blog(connect!)
+            try blog.select(
+                columns: ["title", "posttime","categoryid"],
+                whereclause: "",
+                params: [],
+                orderby: []
+            )
+            let category = Category(connect!)
+            if(blog.rows().count > 0){
+                for item in blog.rows().reversed(){
+                    var contentDict = [String: String]()
+                    contentDict["title"] = item.title
+                    contentDict["posttime"] = item.titlesanitized
+                    try category.select(
+                        columns: ["name"],
+                        whereclause: "id = :1",
+                        params: [item.categoryid],
+                        orderby: []
+                    )
+                    contentDict["tag"] = category.name
+                    
+                    data.append(contentDict)
+                    print(contentDict["titlesanitized"] ?? "null")
+                }
+                
             }
         }catch{
             print(error)

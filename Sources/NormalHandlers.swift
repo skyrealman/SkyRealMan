@@ -17,7 +17,7 @@ import PerfectMustache
 public class PageHandlers{
     open static func makeHome(request: HTTPRequest, _ response: HTTPResponse){
         let dbHandler = DBOrm()
-        let data = dbHandler.getList()
+        let data = dbHandler.getViewList()
         let tags = dbHandler.getCategory()
 
         if tags.count > 0{
