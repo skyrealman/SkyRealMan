@@ -96,8 +96,18 @@ public class BlogAdmin{
             return
 
         }
-        
-        if category.characters.count > 0 {
+        guard !dbHandler.isTagExist(tag: category) else{
+            let contxt: [String: Any] = [
+                "count": dbHandler.getPageContext(),
+                "categories": data,
+                "flash": "标签名已经存在",
+                "accountID": request.user.authDetails?.account.uniqueID ?? "",
+                "authenticated": request.user.authenticated
+            ]
+            response.renderWithDate(template: "admin/manage", context: contxt)
+            return
+        }
+        if category.characters.count > 0{
             dbHandler.setCategory(category)
         }
         data = dbHandler.getCategoryByPage(page: String(dbHandler.getCategoryPageCount()))

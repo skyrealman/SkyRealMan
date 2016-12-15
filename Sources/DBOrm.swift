@@ -149,6 +149,21 @@ class DBOrm{
         }
         return data
     }
+    //设计有问题，不符合面向函数编程思路，可做为反面例子讲解
+    func isTagExist(tag: String) -> Bool{
+        do{
+            let category = Category(connect!)
+            try category.select(columns: ["name"], whereclause: "", params: [], orderby: [])
+            for item in category.rows(){
+                if item.name == tag{
+                    return true
+                }
+            }
+        }catch{
+            print(error)
+        }
+        return false
+    }
     func setCategory(_ name: String){
         do{
             let category = Category(connect!)
