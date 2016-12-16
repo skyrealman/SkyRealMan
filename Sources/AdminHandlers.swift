@@ -149,7 +149,7 @@ public class BlogAdmin{
         response.redirect(path: "/admin/manage")
         
     }
-    open static func makeStoryListGET(request: HTTPRequest, _ response: HTTPResponse){
+    open static func makeManageListGET(request: HTTPRequest, _ response: HTTPResponse){
         
     }
 }

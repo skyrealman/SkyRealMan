@@ -61,12 +61,12 @@ class DBOrm{
         tokenStore?.setup()
     }
     
-    func getViewList() -> [Any]{
+    func getListForView() -> [Any]{
         var data = [Any]()
         do{
             let blog = Blog(connect!)
             try blog.select(
-                columns: ["title", "posttime","categoryid"],
+                columns: ["title", "titlesanitized","synopsis"],
                 whereclause: "",
                 params: [],
                 orderby: []
@@ -88,7 +88,7 @@ class DBOrm{
         }
         return data
     }
-    func getManageList() -> [Any]{
+    func getListForManage() -> [Any]{
         var data = [Any]()
         do{
             let blog = Blog(connect!)
@@ -113,7 +113,7 @@ class DBOrm{
                     contentDict["tag"] = category.name
                     
                     data.append(contentDict)
-                    print(contentDict["titlesanitized"] ?? "null")
+                    print(contentDict["tag"] ?? "null")
                 }
                 
             }
@@ -274,7 +274,7 @@ class DBOrm{
         }
         return yearArr
     }
-    func getStoryListForYear(year: String) ->[Any]{
+    func getListForYear(year: String) ->[Any]{
         var storyArr = [Any]()
         do{
             let blog = Blog(connect!)

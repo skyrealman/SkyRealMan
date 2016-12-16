@@ -17,13 +17,13 @@ import PerfectMustache
 public class PageHandlers{
     open static func makeHome(request: HTTPRequest, _ response: HTTPResponse){
         let dbHandler = DBOrm()
-        let data = dbHandler.getViewList()
+        let data = dbHandler.getListForView()
         let tags = dbHandler.getCategory()
 
         if tags.count > 0{
             let context: [String: Any] = [
                 "posts": data,
-                "title": "天真男的日志",
+                "title": "地盒的博客",
                 "accountID": request.user.authDetails?.account.uniqueID ?? "",
                 "authenticated": request.user.authenticated,
                 "tags": tags
@@ -55,13 +55,13 @@ public class PageHandlers{
         response.renderWithDate(template: "story", context: context)
     }
     
-    open static func makeStoryListByYear(request: HTTPRequest, response: HTTPResponse){
+    open static func makeYearList(request: HTTPRequest, response: HTTPResponse){
         var context: [String: Any] = [String: Any]()
         let dbHandler = DBOrm()
         let years: [String] = dbHandler.getBlogYears()
         var contentDict: [String: Any] = [String: Any]()
         for year in years{
-            let data = dbHandler.getStoryListForYear(year: year)
+            let data = dbHandler.getListForYear(year: year)
             contentDict["year"] = year
             contentDict["blog"] = data
         }
