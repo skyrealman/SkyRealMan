@@ -88,7 +88,10 @@ class DBOrm{
         }
         return data
     }
-    func getListForManage() -> [Any]{
+    func getListForManageByPage(page: String) -> [Any]{
+        let numPerPage = 10
+        let limit = 10
+        let thisCursor = StORMCursor(limit: limit, offset: (Int(page)! - 1) * numPerPage)
         var data = [Any]()
         do{
             let blog = Blog(connect!)
@@ -96,8 +99,11 @@ class DBOrm{
                 columns: ["title", "posttime","categoryid"],
                 whereclause: "",
                 params: [],
-                orderby: []
-            )
+                orderby: [],
+                cursor: thisCursor,
+                joins: [],
+                having: [],
+                groupBy: [])
             let category = Category(connect!)
             if(blog.rows().count > 0){
                 for item in blog.rows().reversed(){
@@ -121,6 +127,33 @@ class DBOrm{
             print(error)
         }
         return data
+    }
+    func getStoryCount() -> Int{
+        var count: Int = 0
+        do{
+            let blog = Blog(connect!)
+            try blog.findAll()
+            count = blog.rows().count
+        }catch{
+            print(error)
+        }
+        return count
+    }
+    func getStoryPageCount() -> Int{
+        let storyCount = self.getStoryCount()
+        var pageCount = 0
+        if storyCount > 0 {
+            pageCount = Int(ceil(Double(storyCount)/10.0))
+            return pageCount
+        }
+        return pageCount
+    }
+    func getStoryPageContext() -> [Any]{
+        var countArr = [Any]()
+        for i in 0..<self.getStoryPageCount(){
+            countArr.append(["page": 1 + i])
+        }
+        return countArr
     }
     func getStory(_ storyid: String) ->[String: String]{
         var data = [String: String]()
@@ -227,7 +260,7 @@ class DBOrm{
         return pageCount
     }
     
-    func getPageContext() -> [Any]{
+    func getTagPageContext() -> [Any]{
         var countArr = [Any]()
         for i in 0..<self.getCategoryPageCount(){
             countArr.append(["page": 1 + i])

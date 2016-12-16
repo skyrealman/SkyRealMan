@@ -18,7 +18,7 @@ public struct RenderHandler: MustachePageHandler{
     var context: [String: Any]
     public func extendValuesForResponse(context contxt: MustacheWebEvaluationContext, collector: MustacheEvaluationOutputCollector) {
         contxt.extendValues(with: context)
-        let t: [String: Any] = ["year": Date().getYear() ?? 0]
+        let t: [String: Any] = ["year": Date().getYear() ?? 0, "webtitle": "地盒的博客"]
         contxt.extendValues(with: t)
         do{
             contxt.webResponse.setHeader(.contentType, value: "text/html")

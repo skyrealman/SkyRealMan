@@ -64,14 +64,14 @@ public class BlogAdmin{
         let page = request.urlVariables["page"] ?? "1"
         let dbHandler = DBOrm()
         guard page.isNumeric() else{
-            response.renderWithDate(template: "admin/manage", context: ["flash": "页码不合法","count": dbHandler.getPageContext()])
+            response.renderWithDate(template: "admin/manage", context: ["flash": "页码不合法","count": dbHandler.getTagPageContext()])
             return
         }
         
         let data = dbHandler.getCategoryByPage(page: page)
 
         let context: [String: Any] = [
-            "count": dbHandler.getPageContext(),
+            "count": dbHandler.getTagPageContext(),
             "categories": data,
             "accountID": request.user.authDetails?.account.uniqueID ?? "",
             "authenticated": request.user.authenticated
@@ -86,7 +86,7 @@ public class BlogAdmin{
         
         guard let category = request.param(name: "category"), category.trimmed() != "" else{
             let contxt: [String: Any] = [
-                "count": dbHandler.getPageContext(),
+                "count": dbHandler.getTagPageContext(),
                 "categories": data,
                 "flash": "标签名不能为空",
                 "accountID": request.user.authDetails?.account.uniqueID ?? "",
@@ -98,7 +98,7 @@ public class BlogAdmin{
         }
         guard !dbHandler.isTagExist(tag: category) else{
             let contxt: [String: Any] = [
-                "count": dbHandler.getPageContext(),
+                "count": dbHandler.getTagPageContext(),
                 "categories": data,
                 "flash": "标签名已经存在",
                 "accountID": request.user.authDetails?.account.uniqueID ?? "",
@@ -113,7 +113,7 @@ public class BlogAdmin{
         data = dbHandler.getCategoryByPage(page: String(dbHandler.getCategoryPageCount()))
 
         let context: [String: Any] = [
-            "count": dbHandler.getPageContext(),
+            "count": dbHandler.getTagPageContext(),
             "categories": data,
             "accountID": request.user.authDetails?.account.uniqueID ?? "",
             "authenticated": request.user.authenticated
@@ -149,7 +149,20 @@ public class BlogAdmin{
         response.redirect(path: "/admin/manage")
         
     }
-    open static func makeManageListGET(request: HTTPRequest, _ response: HTTPResponse){
-        
+    open static func makeManageList(request: HTTPRequest, _ response: HTTPResponse){
+        let dbHandler = DBOrm()
+        let page = request.urlVariables["page"] ?? "1"
+        guard page.isNumeric() else{
+            response.renderWithDate(template: "admin/storymanage", context: ["flash": "页码不合法","count": dbHandler.getStoryPageContext()])
+            return
+        }
+        let data = dbHandler.getListForManageByPage(page: page)
+        let context: [String: Any] = [
+            "count": dbHandler.getStoryPageContext(),
+            "stories": data,
+            "accountID": request.user.authDetails?.account.uniqueID ?? "",
+            "authenticated": request.user.authenticated
+        ]
+        response.renderWithDate(template: "admin/storymanage", context: context)
     }
 }
