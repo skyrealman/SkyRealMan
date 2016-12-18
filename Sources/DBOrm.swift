@@ -41,10 +41,10 @@ class DBOrm{
             }
             
             for i in 0..<blog_data.count{
-                let date = NSDate()
+                let date = Date()
                 let timeFormatter = DateFormatter()
                 timeFormatter.dateFormat = "yyyy-MM-dd"
-                let strNowTime = timeFormatter.string(from: date as Date) as String
+                let strNowTime = timeFormatter.string(from: date) as String
                 blog.id = try blog.insert(cols: ["title", "titlesanitized", "synopsis", "body", "posttime", "authorid", "categoryid", "readtimes", "istopped"], params: [blog_data[i][0], blog_data[i][0].transformToLatinStripDiacritics().slugify(), blog_data[i][1], blog_data[i][2], strNowTime, "nhqtfn--2TIKAAAAAAAAAA", 3, 0, 0]
                     ) as! Int
             }
@@ -109,7 +109,7 @@ class DBOrm{
                 for item in blog.rows().reversed(){
                     var contentDict = [String: String]()
                     contentDict["title"] = item.title
-                    contentDict["posttime"] = item.titlesanitized
+                    contentDict["posttime"] = item.posttime
                     try category.select(
                         columns: ["name"],
                         whereclause: "id = :1",
@@ -175,10 +175,10 @@ class DBOrm{
         return data
     }
     func setStory(_ story: (String,String)){
-        let date = NSDate()
+        let date = Date()
         let timeFormatter = DateFormatter()
         timeFormatter.dateFormat = "yyyy-MM-dd"
-        let strNowTime = timeFormatter.string(from: date as Date) as String
+        let strNowTime = timeFormatter.string(from: date) as String
         do {
             let blog = Blog(connect!)
             let title = story.0
@@ -217,7 +217,7 @@ class DBOrm{
         return data
     }
     //设计有问题，不符合面向函数编程思路，可做为反面例子讲解
-    func isTagExist(tag: String) -> Bool{
+    func isCategoryExist(tag: String) -> Bool{
         do{
             let category = Category(connect!)
             try category.select(columns: ["name"], whereclause: "", params: [], orderby: [])
@@ -336,10 +336,18 @@ class DBOrm{
             let category = Category(connect!)
             try category.select(columns: ["id"], whereclause: "name = $1", params: [tag], orderby: [])
             for item in category.rows(){
-                try category.delete(id: item.id)
+                try category.delete(item.id)
             }
             }catch{
                 print(error)
             }
+    }
+    func editTag(tag: String){
+        do{
+            let category = Category(connect!)
+            try category.update(cols: ["name"], params: [tag], idName: "id", idValue: category.id)
+        }catch{
+            print(error)
+        }
     }
 }

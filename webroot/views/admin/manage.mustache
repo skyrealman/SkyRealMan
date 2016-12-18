@@ -1,9 +1,26 @@
 {{>../header}}
+<div id="deleteTagModal" class="modal fade">
+<div class="modal-dialog">
+<div class="modal-content">
+<div class="modal-header">
+<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+<h4 class="modal-title">删除分类</h4>
+</div>
+<div class="modal-body">
+<p>请确认是否删除分类？</p>
+</div>
+<div class="modal-footer">
+<a class="btn btn-default" data-dismiss="modal">关闭</a>
+<a href="/admin/manage/delete/{{name}}" class="btn btn-primary">删除</a>
+</div>
+</div><!-- /.modal-content -->
+</div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
 
 <ul class="nav nav-tabs">
 <li role="presentation"><a href="/admin/prepare">编写日志</a></li>
-<li role="presentation"><a href="#">管理日志</a></li>
-<li role="presentation" class="active"><a href="#">管理分类</a></li>
+<li role="presentation"><a href="/admin/storymanage">管理日志</a></li>
+<li role="presentation" class="active"><a href="/admin/manage">管理分类</a></li>
 </ul>
 <br>
 <form method = "POST" action = "/admin/manage">
@@ -35,8 +52,8 @@
 <tr>
 <th>{{id}}</th>
 <th>{{name}}</th>
-<th><a class="btn btn-info btn-xs" href="#">编辑</a>&ensp;
-<a class="btn btn-info btn-xs" href="/admin/manage/delete/{{name}}" onClick="return confirm('确认删除?')">删除</a>
+<th><a id="tagedit" class="btn btn-info btn-xs">编辑</a>&ensp;
+<a id = "tagdelete" class="btn btn-info btn-xs" href="/admin/manage/delete/{{name}}" onClick="return confirm('确认删除?')">删除</a>
 </th>
 </tr>
 
@@ -47,17 +64,17 @@
 <nav aria-label="..." style="text-align: right">
 <ul class="pagination">
 <li>
-<a href ="#" aria-label="Previous">
+<a href ="/admin/manage/tag/{{previous}}" aria-label="Previous">
 <span aria-hidden="true"><<</span>
 </a>
 </li>
 {{#count}}
 <li>
-<a href="/admin/manage/page/{{page}}">{{page}}</a>
+<a href="/admin/manage/tag/{{page}}">{{page}}</a>
 </li>
-<li>
 {{/count}}
-<a href="#" aria-label="Next">
+<li>
+<a href="/admin/manage/tag/{{next}}" aria-label="Next">
 <span sria-hidden="true">>></span>
 </a>
 </li>

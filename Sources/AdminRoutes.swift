@@ -16,7 +16,7 @@ public func makeAdminRoutes() -> Routes{
     routes.add(method: .post, uri: "/admin/manage", handler: BlogAdmin.makeTagPOST)
     routes.add(method: .get, uri: "/admin/prepare", handler: BlogAdmin.makeStoryInsertGET)
     routes.add(method: .post, uri: "/admin/prepare", handler: BlogAdmin.makeStoryInsertPOST)
-    routes.add(method: .get, uri: "/admin/manage/page/{page}", handler: BlogAdmin.makeTagGET)
+    routes.add(method: .get, uri: "/admin/manage/tag/{page}", handler: BlogAdmin.makeTagGET)
     routes.add(method: .get, uri: "/admin/check", handler: {
         request, response in
         response.setHeader(.contentType, value: "application/json")
@@ -41,5 +41,8 @@ public func makeAdminRoutes() -> Routes{
     routes.add(method: .get, uri: "/register", handler: BlogAdmin.makeRegisterGET)
     routes.add(method: .post, uri: "/register", handler: BlogAdmin.makeRegisterPOST)
     routes.add(method: .get, uri: "/admin/manage/delete/{tag}", handler: BlogAdmin.deleteTag)
+    
+    routes.add(method: .get, uri: "/admin/storymanage", handler: BlogAdmin.makeManageList)
+    routes.add(method: .get, uri: "/admin/storymanage/story/{page}", handler: BlogAdmin.makeManageList)
     return routes
 }

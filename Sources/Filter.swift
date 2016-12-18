@@ -26,7 +26,7 @@ struct Filter404: HTTPResponseFilter {
     func filterHeaders(response: HTTPResponse, callback: (HTTPResponseFilterResult) -> ()){
         if case .notFound = response.status{
             response.setBody(string: "")
-            response.render(template: "notfound", context: ["error": response.status.description,
+            response.renderWithDate(template: "notfound", context: ["error": response.status.description,
                 "accountID": response.request.user.authDetails?.account.uniqueID ?? "",
                 "authenticated": response.request.user.authenticated
                 ])

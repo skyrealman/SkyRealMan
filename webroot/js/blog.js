@@ -3,8 +3,9 @@ $(function(){
     $("#addTag").text($(this).text());
     $("#addTag").val($(this).text());
   });
+  $(".table tbody th #tagedit").click(function(){
+     $("#deleteTagModal").modal('show')
+  });
 });
-//$(document).ready(function(){
-//   var myDate = new Date();
-//   $("#year").text(myDate.getYear() + 1900);
-//});
+
+

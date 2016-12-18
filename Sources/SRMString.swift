@@ -23,9 +23,9 @@ public extension String{
 
 public extension Date{
     func getYear() -> Int?{
-        let date = NSDate()
+        let date = Date()
         let calendar = NSCalendar.current
-        let dateCom = calendar.dateComponents([.year, .month, .day, .hour, .minute], from: date as Date)
+        let dateCom = calendar.dateComponents([.year, .month, .day, .hour, .minute], from: date)
         return dateCom.year
     }
 }

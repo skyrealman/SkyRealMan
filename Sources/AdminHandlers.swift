@@ -15,6 +15,7 @@ import Turnstile
 import TurnstileCrypto
 import TurnstileWeb
 import PerfectLogger
+import PerfectMustache
 public class BlogAdmin{
     open static func makeLoginGET(request: HTTPRequest, _ response: HTTPResponse){
         response.renderWithDate(template: "login")
@@ -62,16 +63,21 @@ public class BlogAdmin{
     
     open static func makeTagGET(request: HTTPRequest, _ response: HTTPResponse){
         let page = request.urlVariables["page"] ?? "1"
-        let dbHandler = DBOrm()
         guard page.isNumeric() else{
-            response.renderWithDate(template: "admin/manage", context: ["flash": "页码不合法","count": dbHandler.getTagPageContext()])
+            response.redirect(path: "/admin/manage")
             return
         }
-        
+        let categoryPageCount = dbHandler.getCategoryPageCount()
         let data = dbHandler.getCategoryByPage(page: page)
 
         let context: [String: Any] = [
             "count": dbHandler.getTagPageContext(),
+            "previous": {(previous: String, context: MustacheEvaluationContext) -> String in
+                return String(Int(page)! - 1 <= 0 ? 1 : Int(page)! - 1)
+            },
+            "next": {(next: String, context: MustacheEvaluationContext) -> String in
+                return String(Int(page)! + 1 >= categoryPageCount ? categoryPageCount : Int(page)! + 1)
+            },
             "categories": data,
             "accountID": request.user.authDetails?.account.uniqueID ?? "",
             "authenticated": request.user.authenticated
@@ -81,12 +87,18 @@ public class BlogAdmin{
     
     open static func makeTagPOST(request: HTTPRequest, _ response: HTTPResponse){
         response.setHeader(.contentType, value: "text/html")
-        let dbHandler = DBOrm()
-        var data = dbHandler.getCategory()
-        
+        let page = "1"
+        let categoryPageCount = dbHandler.getCategoryPageCount()
+        var data = dbHandler.getCategoryByPage(page: page)
         guard let category = request.param(name: "category"), category.trimmed() != "" else{
             let contxt: [String: Any] = [
                 "count": dbHandler.getTagPageContext(),
+                "previous": {(previous: String, context: MustacheEvaluationContext) -> String in
+                    return String(Int(page)! - 1 <= 0 ? 1 : Int(page)! - 1)
+                },
+                "next": {(next: String, context: MustacheEvaluationContext) -> String in
+                    return String(Int(page)! + 1 >= categoryPageCount ? categoryPageCount : Int(page)! + 1)
+                },
                 "categories": data,
                 "flash": "标签名不能为空",
                 "accountID": request.user.authDetails?.account.uniqueID ?? "",
@@ -96,7 +108,7 @@ public class BlogAdmin{
             return
 
         }
-        guard !dbHandler.isTagExist(tag: category) else{
+        guard !dbHandler.isCategoryExist(tag: category) else{
             let contxt: [String: Any] = [
                 "count": dbHandler.getTagPageContext(),
                 "categories": data,
@@ -124,7 +136,7 @@ public class BlogAdmin{
     }
     
     open static func makeStoryInsertGET(request: HTTPRequest, _ response: HTTPResponse){
-        let dbHandler = DBOrm()
+        
         let tags = dbHandler.getCategory()
         let context: [String: Any] = [
             "accountID": request.user.authDetails?.account.uniqueID ?? "",
@@ -138,19 +150,16 @@ public class BlogAdmin{
             response.renderWithDate(template: "admin/prepare", context: ["flash": "请输入标题与正文"])
             return
         }
-        let dbHandler = DBOrm()
         dbHandler.setStory((title, body))
         response.redirect(path: "/story/\(title.transformToLatinStripDiacritics().slugify())")
     }
     open static func deleteTag(request: HTTPRequest, _ response: HTTPResponse){
-        let dbHandler = DBOrm()
         let rmTag = request.urlVariables["tag"] ?? ""
         dbHandler.deleteTag(tag: rmTag)
         response.redirect(path: "/admin/manage")
         
     }
     open static func makeManageList(request: HTTPRequest, _ response: HTTPResponse){
-        let dbHandler = DBOrm()
         let page = request.urlVariables["page"] ?? "1"
         guard page.isNumeric() else{
             response.renderWithDate(template: "admin/storymanage", context: ["flash": "页码不合法","count": dbHandler.getStoryPageContext()])
@@ -164,5 +173,14 @@ public class BlogAdmin{
             "authenticated": request.user.authenticated
         ]
         response.renderWithDate(template: "admin/storymanage", context: context)
+    }
+    open static func editTag(request: HTTPRequest, _ response: HTTPResponse){
+        let tag = request.urlVariables["tag"] ?? ""
+        guard tag != "" else{
+            response.renderWithDate(template: "admin/manage", context: ["flash": "新的分类名不合法"])
+            return
+        }
+        dbHandler.editTag(tag: tag)
+        response.redirect(path: "/admin/manage")
     }
 }

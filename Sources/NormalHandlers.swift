@@ -16,7 +16,6 @@ import Foundation
 import PerfectMustache
 public class PageHandlers{
     open static func makeHome(request: HTTPRequest, _ response: HTTPResponse){
-        let dbHandler = DBOrm()
         let data = dbHandler.getListForView()
         let tags = dbHandler.getCategory()
 
@@ -37,7 +36,6 @@ public class PageHandlers{
     open static func makeStoryQuery(request: HTTPRequest, _ response: HTTPResponse){
         var context: [String: Any]  = [String: Any]()
         let titleSanitized = request.urlVariables["titlesanitized"] ?? ""
-        let dbHandler = DBOrm()
         let data = dbHandler.getStory(titleSanitized)
         if data["title"] == nil{
             context["title"] = "错误"
@@ -57,7 +55,6 @@ public class PageHandlers{
     
     open static func makeYearList(request: HTTPRequest, response: HTTPResponse){
         var context: [String: Any] = [String: Any]()
-        let dbHandler = DBOrm()
         let years: [String] = dbHandler.getBlogYears()
         var contentDict: [String: Any] = [String: Any]()
         for year in years{
