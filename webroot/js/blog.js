@@ -4,7 +4,9 @@ $(function(){
     $("#addTag").val($(this).text());
   });
   $(".table tbody th #tagedit").click(function(){
-     $("#deleteTagModal").modal('show')
+        console.log($(this).attr("abc"));
+        $("#deleteTagModal").modal('show');
+        $("#del").attr("href", "/admin/manage/delete/" + $(this).attr("abc"));
   });
 });
 
