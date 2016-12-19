@@ -175,12 +175,13 @@ public class BlogAdmin{
         response.renderWithDate(template: "admin/storymanage", context: context)
     }
     open static func editTag(request: HTTPRequest, _ response: HTTPResponse){
-        let tag = request.urlVariables["tag"] ?? ""
-        guard tag != "" else{
+        let oldTag = request.urlVariables["oldtag"] ?? ""
+        let newTag = request.urlVariables["newtag"] ?? ""
+        guard newTag != "", oldTag != "" else{
             response.renderWithDate(template: "admin/manage", context: ["flash": "新的分类名不合法"])
             return
         }
-        dbHandler.editTag(tag: tag)
+        dbHandler.editTag(oldTag: oldTag, newTag: newTag)
         response.redirect(path: "/admin/manage")
     }
 }

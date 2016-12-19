@@ -342,10 +342,15 @@ class DBOrm{
                 print(error)
             }
     }
-    func editTag(tag: String){
+    //newTag需要先校验，看是否存在，如果不存在再赋给oldTag
+    func editTag(oldTag: String, newTag: String){
         do{
             let category = Category(connect!)
-            try category.update(cols: ["name"], params: [tag], idName: "id", idValue: category.id)
+            try category.select(columns: ["id"], whereclause: "name = $1", params: [oldTag], orderby: [])
+            for item in category.rows(){
+                try category.update(cols: ["name"], params: [newTag], idName: "id", idValue: item.id)
+            }
+
         }catch{
             print(error)
         }
