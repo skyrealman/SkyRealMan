@@ -69,8 +69,8 @@ public class BlogAdmin{
         }
         let categoryPageCount = dbHandler.getCategoryPageCount()
         let data = dbHandler.getCategoryByPage(page: page)
-
-        let context: [String: Any] = [
+        let scratchPad = request.scratchPad
+        var context: [String: Any] = [
             "count": dbHandler.getTagPageContext(),
             "previous": {(previous: String, context: MustacheEvaluationContext) -> String in
                 return String(Int(page)! - 1 <= 0 ? 1 : Int(page)! - 1)
@@ -81,58 +81,40 @@ public class BlogAdmin{
             "categories": data,
             "accountID": request.user.authDetails?.account.uniqueID ?? "",
             "authenticated": request.user.authenticated
-        ]
+            ]
+        for key in scratchPad.keys {
+            context[key] = scratchPad[key]
+        }
         response.renderWithDate(template: "admin/manage", context: context)
     }
     
     open static func makeTagPOST(request: HTTPRequest, _ response: HTTPResponse){
         response.setHeader(.contentType, value: "text/html")
-        let page = "1"
-        let categoryPageCount = dbHandler.getCategoryPageCount()
-        var data = dbHandler.getCategoryByPage(page: page)
         guard let category = request.param(name: "category"), category.trimmed() != "" else{
             let contxt: [String: Any] = [
-                "count": dbHandler.getTagPageContext(),
-                "previous": {(previous: String, context: MustacheEvaluationContext) -> String in
-                    return String(Int(page)! - 1 <= 0 ? 1 : Int(page)! - 1)
-                },
-                "next": {(next: String, context: MustacheEvaluationContext) -> String in
-                    return String(Int(page)! + 1 >= categoryPageCount ? categoryPageCount : Int(page)! + 1)
-                },
-                "categories": data,
                 "flash": "标签名不能为空",
-                "accountID": request.user.authDetails?.account.uniqueID ?? "",
-                "authenticated": request.user.authenticated
             ]
-            response.renderWithDate(template: "admin/manage", context: contxt)
+            for key in contxt.keys {
+                response.request.scratchPad[key] = contxt[key]
+            }
+            makeTagGET(request: request, response)
             return
 
         }
         guard !dbHandler.isCategoryExist(tag: category) else{
             let contxt: [String: Any] = [
-                "count": dbHandler.getTagPageContext(),
-                "categories": data,
                 "flash": "标签名已经存在",
-                "accountID": request.user.authDetails?.account.uniqueID ?? "",
-                "authenticated": request.user.authenticated
             ]
-            response.renderWithDate(template: "admin/manage", context: contxt)
+            for key in contxt.keys {
+                response.request.scratchPad[key] = contxt[key]
+            }
+            makeTagGET(request: request, response)
             return
         }
         if category.characters.count > 0{
             dbHandler.setCategory(category)
         }
-        data = dbHandler.getCategoryByPage(page: String(dbHandler.getCategoryPageCount()))
-
-        let context: [String: Any] = [
-            "count": dbHandler.getTagPageContext(),
-            "categories": data,
-            "accountID": request.user.authDetails?.account.uniqueID ?? "",
-            "authenticated": request.user.authenticated
-
-        ]
-        
-        response.renderWithDate(template: "admin/manage", context: context)
+        makeTagGET(request: request, response)
     }
     
     open static func makeStoryInsertGET(request: HTTPRequest, _ response: HTTPResponse){
@@ -178,10 +160,19 @@ public class BlogAdmin{
         let oldTag = request.urlVariables["oldtag"] ?? ""
         let newTag = request.urlVariables["newtag"] ?? ""
         guard newTag != "", oldTag != "" else{
-            response.renderWithDate(template: "admin/manage", context: ["flash": "新的分类名不合法"])
+            let contxt: [String: Any] = [
+            "flash": "标签名不合法",
+            ]
+            for key in contxt.keys {
+                response.request.scratchPad[key] = contxt[key]
+            }
+            makeTagGET(request: request, response)
             return
         }
         dbHandler.editTag(oldTag: oldTag, newTag: newTag)
         response.redirect(path: "/admin/manage")
     }
+    //private static func normalTagContext() -> [String: Any]{
+        
+    //}
 }
