@@ -132,7 +132,14 @@ public class BlogAdmin{
             response.renderWithDate(template: "admin/prepare", context: ["flash": "请输入标题与正文"])
             return
         }
-        dbHandler.setStory((title, body))
+        guard let tag = request.param(name: "tag"), !tag.isEmpty else{
+            response.renderWithDate(template: "admin/prepare", context: ["flash": "请选择分类"])
+            return
+        }
+        let isTopped = request.param(name: "istopped") ?? "0"
+        let isComment = request.param(name: "iscomment") ?? "0"
+        let userId = request.user.authDetails?.account.uniqueID ?? ""
+        dbHandler.setStory((title: title, body: body, tag: tag, userId: userId, isTopped: isTopped, isComment: isComment))
         response.redirect(path: "/story/\(title.transformToLatinStripDiacritics().slugify())")
     }
     open static func deleteTag(request: HTTPRequest, _ response: HTTPResponse){

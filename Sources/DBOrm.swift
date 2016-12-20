@@ -21,8 +21,10 @@ class DBOrm{
         connect = SQLiteConnect(dbPath)
         let blog = Blog(connect!)
         let category = Category(connect!)
+        let comment = Comment(connect!)
         blog.setup()
         category.setup()
+        comment.setup()
     }
     func populate(){
         let blog_data = [
@@ -161,8 +163,11 @@ class DBOrm{
         do {
             let blog = Blog(connect!)
             let category = Category(connect!)
+            //let users = AuthAccount(connect!)
             try blog.select(columns: ["title", "body", "posttime", "authorid", "categoryid"], whereclause: "titlesanitized = :1", params: [storyid], orderby: [])
             try category.select(columns: ["name"], whereclause: "id = :1", params:[blog.rows()[0].categoryid], orderby: [])
+            //try users.select(columns: ["username"], whereclause: "uniqueID = :1", params: [blog.rows()[0].authorid], orderby: [])
+            //print(users)
             data["title"] = blog.rows()[0].title
             data["body"] = blog.rows()[0].body
             data["posttime"] = blog.rows()[0].posttime
@@ -174,16 +179,25 @@ class DBOrm{
         }
         return data
     }
-    func setStory(_ story: (String,String)){
+    func setStory(_ story: (title:String, body:String, tag: String, userId: String, isTopped: String, isComment: String)){
         let date = Date()
         let timeFormatter = DateFormatter()
         timeFormatter.dateFormat = "yyyy-MM-dd"
         let strNowTime = timeFormatter.string(from: date) as String
         do {
             let blog = Blog(connect!)
-            let title = story.0
-            let titlesanitized = story.0.transformToLatinStripDiacritics().slugify()
-            let body = story.1
+            let category = Category(connect!)
+            var tag = 0
+            try category.select(columns: ["id"], whereclause: "name = $1", params: [story.tag], orderby: [])
+            if (category.rows().count == 0){
+                category.id = try category.insert(cols: ["name"], params: [story.tag]) as! Int
+                tag = category.id
+            }else{
+                tag = category.rows()[0].id
+            }
+            let title = story.title
+            let titlesanitized = story.title.transformToLatinStripDiacritics().slugify()
+            let body = story.body
             var synopsis = ""
             if (body.characters.count <= 50){
                 synopsis = body
@@ -192,8 +206,10 @@ class DBOrm{
                 synopsis = body.substring(to: index)
             }
             let posttime = strNowTime
-            let authorid = "nhqtfn--2TIKAAAAAAAAAA"
-            blog.id = try blog.insert(cols: ["title", "titlesanitized", "synopsis", "body", "posttime", "authorid", "categoryid", "readtimes", "istopped"], params: [title, titlesanitized, synopsis, body, posttime, authorid, 3, 0, 0]) as! Int
+            let authorid = story.userId
+            let isTopped = story.isTopped
+            let isComment = story.isComment
+            blog.id = try blog.insert(cols: ["title", "titlesanitized", "synopsis", "body", "posttime", "authorid", "categoryid", "readtimes", "istopped", "iscomment"], params: [title, titlesanitized, synopsis, body, posttime, authorid, tag, 0, isTopped, isComment]) as! Int
         }catch{
             print(error)
         }
@@ -318,7 +334,7 @@ class DBOrm{
                 try blog.select(columns: ["title","categoryid","readtimes","posttime"], whereclause: wString, params: [], orderby: [])
             }
 
-            for item in blog.rows(){
+            for item in blog.rows().reversed(){
                 var contentDict = [String: Any]()
                 contentDict["title"] = item.title
                 contentDict["categoryid"] = item.categoryid
@@ -334,9 +350,14 @@ class DBOrm{
     func deleteTag(tag: String){
         do{
             let category = Category(connect!)
+            let blog = Blog(connect!)
             try category.select(columns: ["id"], whereclause: "name = $1", params: [tag], orderby: [])
-            for item in category.rows(){
-                try category.delete(item.id)
+            for tag in category.rows(){
+                try category.delete(tag.id)
+                try blog.select(columns: ["id"], whereclause: "categoryid = $1", params: [tag.id], orderby: [])
+                for b in blog.rows(){
+                   try blog.delete(b.id)
+                }
             }
             }catch{
                 print(error)

@@ -29,7 +29,7 @@ public class PageHandlers{
             ]
             response.renderWithDate(template: "index", context: context)
         }else{
-            response.renderWithDate(template: "index", context: ["flash": "没有配置分类"])
+            response.renderWithDate(template: "index", context: ["flash": "没有配置分类", "accountID": request.user.authDetails?.account.uniqueID ?? "", "authenticated": request.user.authenticated])
         }
         
     }
@@ -37,6 +37,7 @@ public class PageHandlers{
         var context: [String: Any]  = [String: Any]()
         let titleSanitized = request.urlVariables["titlesanitized"] ?? ""
         let data = dbHandler.getStory(titleSanitized)
+        print(data)
         if data["title"] == nil{
             context["title"] = "错误"
             context["body"] = "没有找到相关博客"

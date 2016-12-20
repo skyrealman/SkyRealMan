@@ -36,7 +36,7 @@ LogFile.info("Http服务器端口: \(httpPort)")
 
 var dbHandler = DBOrm()
 dbHandler.create()
-dbHandler.populate()
+//dbHandler.populate()
 dbHandler.auth()
 
 //let apiRoute = "/api/v1/"
