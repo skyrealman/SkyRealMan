@@ -181,9 +181,16 @@ public class BlogAdmin{
     }
     
     open static func editStory(request: HTTPRequest, _ response: HTTPResponse){
-        let story = request.urlVariables["story"] ?? ""
-        let data = dbHandler.getStory(story.transformToLatinStripDiacritics().slugify())
+        let title = request.urlVariables["title"] ?? ""
+        let data = dbHandler.getStory(title.transformToLatinStripDiacritics().slugify())
+        //response.setHeader(.contentType, value: "application/json")
+
         response.setHeader(.contentType, value: "application/json")
-        //response.appendBody(string: data)
+        do{
+           try response.setBody(json: data)
+        }catch{
+            print(error)
+        }
+        response.completed()
     }
 }

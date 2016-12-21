@@ -98,7 +98,7 @@ class DBOrm{
         do{
             let blog = Blog(connect!)
             try blog.select(
-                columns: ["title", "posttime","categoryid"],
+                columns: ["title","titlesanitized", "posttime","categoryid"],
                 whereclause: "",
                 params: [],
                 orderby: [],
@@ -112,6 +112,7 @@ class DBOrm{
                     var contentDict = [String: String]()
                     contentDict["title"] = item.title
                     contentDict["posttime"] = item.posttime
+                    contentDict["titlesanitized"] = item.titlesanitized
                     try category.select(
                         columns: ["name"],
                         whereclause: "id = :1",
