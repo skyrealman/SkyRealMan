@@ -1,4 +1,4 @@
-//
+ //
 //  DBOrm.swift
 //  SkyRealMan
 //
@@ -163,17 +163,18 @@ class DBOrm{
         do {
             let blog = Blog(connect!)
             let category = Category(connect!)
-            //let users = AuthAccount(connect!)
-            try blog.select(columns: ["title", "body", "posttime", "authorid", "categoryid"], whereclause: "titlesanitized = :1", params: [storyid], orderby: [])
+            let users = AuthAccount(connect!)
+            try blog.select(columns: ["title", "body", "posttime", "authorid", "categoryid", "istopped", "iscomment"], whereclause: "titlesanitized = :1", params: [storyid], orderby: [])
             try category.select(columns: ["name"], whereclause: "id = :1", params:[blog.rows()[0].categoryid], orderby: [])
-            //try users.select(columns: ["username"], whereclause: "uniqueID = :1", params: [blog.rows()[0].authorid], orderby: [])
+            try users.select(columns: [], whereclause: "uniqueID = :1", params: [blog.rows()[0].authorid], orderby: [])
             //print(users)
             data["title"] = blog.rows()[0].title
             data["body"] = blog.rows()[0].body
             data["posttime"] = blog.rows()[0].posttime
-            data["user_name"] = blog.rows()[0].authorid
+            data["user_name"] = users.username
             data["category_name"] = category.rows()[0].name
-            
+            data["istopped"] = String(blog.rows()[0].isTopped)
+            data["iscomment"] = String(blog.rows()[0].isComment)
         }catch{
             print(error)
         }
@@ -188,11 +189,10 @@ class DBOrm{
             let blog = Blog(connect!)
             let category = Category(connect!)
             var tag = 0
-            try category.select(columns: ["id"], whereclause: "name = $1", params: [story.tag], orderby: [])
-            if (category.rows().count == 0){
-                category.id = try category.insert(cols: ["name"], params: [story.tag]) as! Int
-                tag = category.id
+            if (!category.exists(story.tag)){
+                tag = self.setCategory(story.tag)
             }else{
+                try category.select(whereclause: "name = :1", params: [story.tag], orderby: [])
                 tag = category.rows()[0].id
             }
             let title = story.title
@@ -234,25 +234,18 @@ class DBOrm{
     }
     //设计有问题，不符合面向函数编程思路，可做为反面例子讲解
     func isCategoryExist(tag: String) -> Bool{
-        do{
-            let category = Category(connect!)
-            try category.select(columns: ["name"], whereclause: "", params: [], orderby: [])
-            for item in category.rows(){
-                if item.name == tag{
-                    return true
-                }
-            }
-        }catch{
-            print(error)
-        }
-        return false
+        let category = Category(connect!)
+        return category.exists(tag)
     }
-    func setCategory(_ name: String){
+    
+    func setCategory(_ name: String) -> Int{
         do{
             let category = Category(connect!)
             category.id = try category.insert(cols: ["name"], params: [name]) as! Int
+            return category.id
         }catch{
             print(error)
+            return 0
         }
     }
     func getCategoryCount() -> Int{

@@ -112,7 +112,7 @@ public class BlogAdmin{
             return
         }
         if category.characters.count > 0{
-            dbHandler.setCategory(category)
+            let _ = dbHandler.setCategory(category)
         }
         makeTagGET(request: request, response)
     }
@@ -179,7 +179,11 @@ public class BlogAdmin{
         dbHandler.editTag(oldTag: oldTag, newTag: newTag)
         response.redirect(path: "/admin/manage")
     }
-    //private static func normalTagContext() -> [String: Any]{
-        
-    //}
+    
+    open static func editStory(request: HTTPRequest, _ response: HTTPResponse){
+        let story = request.urlVariables["story"] ?? ""
+        let data = dbHandler.getStory(story.transformToLatinStripDiacritics().slugify())
+        response.setHeader(.contentType, value: "application/json")
+        //response.appendBody(string: data)
+    }
 }

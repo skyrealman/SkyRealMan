@@ -38,4 +38,17 @@ open class Category: SQLiteStORM{
             print(error)
         }
     }
+    public func exists(_ tag: String) -> Bool {
+        do{
+            try select(whereclause: "name = :1", params: [tag], orderby: [], cursor: StORMCursor(limit: 1, offset: 0))
+            if results.rows.count == 1{
+                return true
+            } else{
+                return false
+            }
+        }catch{
+            print("Exists error: \(error)")
+            return false
+        }
+    }
 }
