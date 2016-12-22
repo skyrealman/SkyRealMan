@@ -120,11 +120,14 @@ public class BlogAdmin{
     open static func makeStoryInsertGET(request: HTTPRequest, _ response: HTTPResponse){
         
         let tags = dbHandler.getCategory()
-        let context: [String: Any] = [
+        var context: [String: Any] = [
             "accountID": request.user.authDetails?.account.uniqueID ?? "",
             "authenticated": request.user.authenticated,
             "tags": tags
         ]
+        if request.scratchPad.keys.contains("title"){
+            context["title"] = request.scratchPad["title"]
+        }
         response.renderWithDate(template: "admin/prepare", context: context)
     }
     open static func makeStoryInsertPOST(request: HTTPRequest, _ response: HTTPResponse){
@@ -182,12 +185,24 @@ public class BlogAdmin{
     
     open static func editStory(request: HTTPRequest, _ response: HTTPResponse){
         let title = request.urlVariables["title"] ?? ""
+        //let data = dbHandler.getStory(title.transformToLatinStripDiacritics().slugify())
+        //response.setHeader(.contentType, value: "application/json")
+        let contxt : [String: Any] = [
+            "title": title
+        ]
+        for key in contxt.keys {
+            response.request.scratchPad[key] = contxt[key]
+        }
+        makeStoryInsertGET(request: request, response)
+ 
+    }
+    open static func getStoryAPI(request: HTTPRequest, _ response: HTTPResponse){
+        let title = request.urlVariables["title"] ?? ""
         let data = dbHandler.getStory(title.transformToLatinStripDiacritics().slugify())
         //response.setHeader(.contentType, value: "application/json")
-
         response.setHeader(.contentType, value: "application/json")
         do{
-           try response.setBody(json: data)
+            try response.setBody(json: data)
         }catch{
             print(error)
         }

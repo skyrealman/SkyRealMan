@@ -15,11 +15,5 @@ $(function(){
         });
         
   });
-  $(".table tbody th #storyedit").click(function(){
-        $.getJSON($(this).attr("href"), function(data){
-            location.href = "/admin/prepare";
-            $("#storytitle").val(data.title);
-        });
-  });
 });
 

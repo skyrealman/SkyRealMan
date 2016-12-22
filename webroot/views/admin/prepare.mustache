@@ -1,4 +1,15 @@
 {{>../header}}
+<script>
+$(function(){
+if(window.location.href.indexOf("edit") >= 0){
+$.getJSON("/admin/prepare/api/{{title}}", function(data){
+$("#storytitle").val(data.title);
+$("#addTag").val(data.category_name);
+$("#storybody").val(data.body);
+})
+}
+})
+</script>
 <ul class="nav nav-tabs">
 <li role="presentation" class="active"><a href="/admin/prepare">编写日志</a></li>
 <li role="presentation"><a href="/admin/storymanage">管理日志</a></li>
@@ -56,7 +67,7 @@
 </div>
 <div class="form-group">
 <label for="body">添加正文</label>
-<textarea class="form-control" name = "body" rows="30" placeholder="请输入正文"></textarea>
+<textarea class="form-control" name = "body" rows="30" placeholder="请输入正文" id = "storybody"></textarea>
 </div>
 <button type = "submit" class="btn btn-primary">提交</button>
 </form>
