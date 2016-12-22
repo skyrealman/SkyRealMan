@@ -172,10 +172,12 @@ class DBOrm{
             data["title"] = blog.rows()[0].title
             data["body"] = blog.rows()[0].body
             data["posttime"] = blog.rows()[0].posttime
-            data["user_name"] = users.username
-            data["category_name"] = category.rows()[0].name
             data["istopped"] = String(blog.rows()[0].isTopped)
             data["iscomment"] = String(blog.rows()[0].isComment)
+            data["user_name"] = users.username
+            data["category_name"] = category.rows()[0].name
+
+            print("=====" + String(blog.rows()[0].isComment))
         }catch{
             print(error)
         }
@@ -210,10 +212,29 @@ class DBOrm{
             let authorid = story.userId
             let isTopped = story.isTopped
             let isComment = story.isComment
-            blog.id = try blog.insert(cols: ["title", "titlesanitized", "synopsis", "body", "posttime", "authorid", "categoryid", "readtimes", "istopped", "iscomment"], params: [title, titlesanitized, synopsis, body, posttime, authorid, tag, 0, isTopped, isComment]) as! Int
+            if blog.exists(title){
+                print("here")
+                try blog.select(columns: ["id", "posttime", "authorid"], whereclause: "title = :1", params: [title], orderby: [])
+                try blog.update(cols: ["title","titlesanitized", "synopsis", "body", "posttime", "authorid", "categoryid", "readtimes", "istopped", "iscomment"], params: [title, titlesanitized, synopsis, body, blog.rows()[0].posttime, blog.rows()[0].authorid, tag, 0, isTopped, isComment], idName: "id", idValue: blog.rows()[0].id)
+            }else{
+                blog.id = try blog.insert(cols: ["title", "titlesanitized", "synopsis", "body", "posttime", "authorid", "categoryid", "readtimes", "istopped", "iscomment"], params: [title, titlesanitized, synopsis, body, posttime, authorid, tag, 0, isTopped, isComment]) as! Int
+            }
+
         }catch{
             print(error)
         }
+    }
+    func deleteStory(_ titlesanitized: String){
+        let blog = Blog(connect!)
+        do{
+            try blog.select(columns: ["id"], whereclause: "titlesanitized = $1", params: [titlesanitized], orderby: [])
+            for story in blog.rows(){
+                try blog.delete(id: story.id)
+            }
+        }catch{
+            print(error)
+        }
+        
     }
     func getCategory() ->[Any]{
         var data = [Any]()

@@ -36,7 +36,7 @@ open class Blog: SQLiteStORM{
         categoryid = this.data["categoryid"] as? Int ?? 0
         readtimes = this.data["readtimes"] as? Int ?? 0
         isTopped = this.data["istopped"] as? Int ?? 0
-        isComment = this.data["isComment"] as? Int ?? 0
+        isComment = this.data["iscomment"] as? Int ?? 0
         id = this.data["id"] as? Int ?? 0
     }
     func rows() ->[Blog]{
@@ -54,6 +54,20 @@ open class Blog: SQLiteStORM{
             try sqlExec("CREATE TABLE IF NOT EXISTS blog (id INTEGER PRIMARY KEY NOT NULL, title TEXT, titlesanitized TEXT, synopsis TEXT, body TEXT, posttime TEXT, authorid TEXT REFERENCES users(uniqueID) ON DELETE CASCADE, categoryid INTEGER REFERENCES category(id) ON DELETE CASCADE, readtimes INTEGER, istopped INTEGER, iscomment INTEGER)")
         }catch{
             print(error)
+        }
+    }
+    
+    public func exists(_ title: String) -> Bool{
+        do{
+            try select(whereclause: "title = :1", params: [title], orderby: [], cursor: StORMCursor(limit: 1, offset: 0))
+            if results.rows.count == 1{
+                return true
+            }else{
+                return false
+            }
+        }catch{
+            print("Exists error: \(error)")
+            return false
         }
     }
 //    func make() throws{

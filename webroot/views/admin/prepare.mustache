@@ -4,12 +4,25 @@ $(function(){
 if(window.location.href.indexOf("edit") >= 0){
 $.getJSON("/admin/prepare/api/{{title}}", function(data){
 $("#storytitle").val(data.title);
+$("#storytitle").attr("readonly", "true");
 $("#addTag").val(data.category_name);
 $("#storybody").val(data.body);
-})
+
+if(data.istopped == 1){
+$("#topRadio1").attr("checked", "true");
+}else{
+$("#topRadio2").attr("checked", "true");
 }
-})
+if(data.iscomment == 1){
+$("#commentRadio1").attr("checked", "true");
+}else{
+$("#commentRadio2").attr("checked", "true");
+}
+});
+}
+});
 </script>
+
 <ul class="nav nav-tabs">
 <li role="presentation" class="active"><a href="/admin/prepare">编写日志</a></li>
 <li role="presentation"><a href="/admin/storymanage">管理日志</a></li>
@@ -49,18 +62,18 @@ $("#storybody").val(data.body);
 </div>
 <div class="col-lg-3">
 <label class="radio-inline">
-<input type="radio" name="istopped" id="inlineRadio1" value="1"> 是
+<input type="radio" name="istopped" id="topRadio1" value="1"> 是
 </label>
 <label class="radio-inline">
-<input type="radio" name="istopped" id="inlineRadio2" value="0" checked> 否
+<input type="radio" name="istopped" id="topRadio2" value="0" checked> 否
 </label>
 </div>
 <div class="col-lg-3">
 <label class="radio-inline">
-<input type="radio" name="iscomment" id="inlineRadio1" value="1"> 是
+<input type="radio" name="iscomment" id="commentRadio1" value="1"> 是
 </label>
 <label class="radio-inline">
-<input type="radio" name="iscomment" id="inlineRadio2" value="0" checked> 否
+<input type="radio" name="iscomment" id="commentRadio2" value="0" checked> 否
 </label>
 </div>
 </div>

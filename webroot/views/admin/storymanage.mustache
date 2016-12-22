@@ -1,4 +1,23 @@
 {{>../header}}
+
+<div id="deleteStoryModal" class="modal fade">
+<div class="modal-dialog">
+<div class="modal-content">
+<div class="modal-header">
+<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+<h4 class="modal-title">删除博客</h4>
+</div>
+<div class="modal-body">
+<p>请确认是否删除博客？</p>
+</div>
+<div class="modal-footer">
+<a class="btn btn-default" data-dismiss="modal">关闭</a>
+<a id="del" class="btn btn-primary">删除</a>
+</div>
+</div><!-- /.modal-content -->
+</div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
 <ul class="nav nav-tabs">
 <li role="presentation"><a href="/admin/prepare">编写日志</a></li>
 <li role="presentation" class="active"><a href="/admin/storymanage">管理日志</a></li>
@@ -22,7 +41,7 @@
 <th>{{title}}</th>
 <th>{{posttime}}</th>
 <th>{{tag}}</th>
-<th><a id="storyedit" href="/admin/prepare/edit/{{titlesanitized}}">编辑</a>&ensp;<a>删除</a>&ensp;<a>置顶</a>&ensp;<a>评论</a>&ensp;</th>
+<th><a id="storyedit" href="/admin/prepare/edit/{{titlesanitized}}">编辑</a>&ensp;<a id="storydel" abc="{{titlesanitized}}" href = "#">删除</a>&ensp;<a>置顶</a>&ensp;<a>评论</a>&ensp;</th>
 </tr>
 </tbody>
 {{/stories}}

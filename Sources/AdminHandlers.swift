@@ -208,4 +208,10 @@ public class BlogAdmin{
         }
         response.completed()
     }
+    open static func deleteStory(request: HTTPRequest, _ response: HTTPResponse){
+        let titlesanitized = request.urlVariables["titlesanitized"] ?? ""
+        dbHandler.deleteStory(titlesanitized)
+        response.redirect(path: "/admin/storymanage")
+        
+    }
 }

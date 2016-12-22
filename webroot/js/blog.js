@@ -15,5 +15,9 @@ $(function(){
         });
         
   });
+  $(".table tbody th #storydel").click(function(){
+        $("#deleteStoryModal").modal('show')
+        $("#del").attr("href", "/admin/storymanage/delete/" + $(this).attr("abc"));
+  });
 });
 
