@@ -48,6 +48,8 @@ public class PageHandlers{
             context["posttime"] = data["posttime"]
             context["user_name"] = data["user_name"]
             context["category_name"] = data["category_name"]
+            context["iscomment"] = data["iscomment"]
+            context["istopped"] = data["istopped"]
         }
         context["accountID"] = request.user.authDetails?.account.uniqueID ?? ""
         context["authenticated"] = request.user.authenticated

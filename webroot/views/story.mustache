@@ -1,4 +1,16 @@
 {{>header}}
+<script>
+$(function(){
+if({{iscomment}} == 0){
+
+$("#commentField").hide();
+}
+if({{iscomment}} == 1){
+$("#commentField").show();
+}
+});
+
+</script>
 <h4 class="text-primary">
     {{title}}
 </h4>
@@ -9,5 +21,30 @@
 <hr>
 <div>{{{body}}}</div>
 <a href="/">(返回)</a>
+<br>
+<br>
+
+<div id="commentField">
+<form id="comment" method = "POST" action = "#">
+<h3>我要留言</h3>
+<hr/>
+<label>您的留言(HTML标签部分可用)</label>
+<textarea class="form-control" name="body" rows="10" placeholder="请输入留言..." id="commentbody"></textarea>
+<label>您的姓名</label>
+<div class="row">
+<div class="col-lg-4">
+<input type = "text" class="form-control" name="name" id="visitorname" />
+</div>
+</div>
+<label>您的邮箱</label>
+<div class="row">
+<div class="col-lg-4">
+<input type="text" class="form-control" name="email" id="visitoremail" />
+</div>
+</div>
+<br>
+<button type="submit" class="btn btn-primary">提交</button>
+</form>
+</div>
 
 {{>footer}}
