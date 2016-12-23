@@ -98,7 +98,7 @@ class DBOrm{
         do{
             let blog = Blog(connect!)
             try blog.select(
-                columns: ["title","titlesanitized", "posttime","categoryid"],
+                columns: ["title","titlesanitized", "posttime","categoryid","iscomment","istopped"],
                 whereclause: "",
                 params: [],
                 orderby: [],
@@ -113,6 +113,13 @@ class DBOrm{
                     contentDict["title"] = item.title
                     contentDict["posttime"] = item.posttime
                     contentDict["titlesanitized"] = item.titlesanitized
+                    contentDict["iscomment"] = String(item.isComment)
+                    contentDict["istopped"] = String(item.isTopped)
+                    if(item.isComment == 1){
+                        contentDict["commentlabel"] = "关闭留言"
+                    }else if(item.isComment == 0){
+                        contentDict["commentlabel"] = "打开留言"
+                    }
                     try category.select(
                         columns: ["name"],
                         whereclause: "id = :1",
@@ -387,6 +394,22 @@ class DBOrm{
                 try category.update(cols: ["name"], params: [newTag], idName: "id", idValue: item.id)
             }
 
+        }catch{
+            print(error)
+        }
+    }
+    func changeCommentStatus(titlesanitized: String){
+        do{
+            let blog = Blog(connect!)
+            try blog.select(columns: ["id", "iscomment"], whereclause: "titlesanitized = $1", params: [titlesanitized], orderby: [])
+            if(blog.rows().count == 1){
+                if(blog.rows()[0].isComment == 0){
+                    try blog.update(cols: ["iscomment"], params: [1], idName: "id", idValue: blog.rows()[0].id)
+                }else{
+                    try blog.update(cols: ["iscomment"], params: [0], idName: "id", idValue: blog.rows()[0].id)
+                }
+                
+            }
         }catch{
             print(error)
         }

@@ -214,4 +214,9 @@ public class BlogAdmin{
         response.redirect(path: "/admin/storymanage")
         
     }
+    open static func changeCommentStatus(request: HTTPRequest, _ response: HTTPResponse){
+        let titlesanitized = request.urlVariables["titlesanitized"] ?? ""
+        dbHandler.changeCommentStatus(titlesanitized: titlesanitized)
+        response.redirect(path: "/admin/storymanage")
+    }
 }
