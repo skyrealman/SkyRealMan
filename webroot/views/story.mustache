@@ -23,17 +23,26 @@ $("#commentField").show();
 <a href="/">(返回)</a>
 <br>
 <br>
-
+<div id="comments">
+<h3>留言</h3>
+<hr/>
+{{#comments}}
+<p><b>{{visitor}}</b>&nbsp;&nbsp;说：</p>
+<p style="text-indent: 2em;">{{cbody}}</p>
+<p style="text-align: right;">{{cposttime}}</p>
+<hr/>
+{{/comments}}
+</div>
 <div id="commentField">
-<form id="comment" method = "POST" action = "#">
+<form id="comment" method = "POST" action = "/story/{{titleSanitized}}/comment">
 <h3>我要留言</h3>
 <hr/>
 <label>您的留言(HTML标签部分可用)</label>
-<textarea class="form-control" name="body" rows="10" placeholder="请输入留言..." id="commentbody"></textarea>
+<textarea class="form-control" name="cbody" rows="10" placeholder="请输入留言..." id="commentbody"></textarea>
 <label>您的姓名</label>
 <div class="row">
 <div class="col-lg-4">
-<input type = "text" class="form-control" name="name" id="visitorname" />
+<input type = "text" class="form-control" name="visitor" id="visitorname" />
 </div>
 </div>
 <label>您的邮箱</label>
@@ -43,7 +52,7 @@ $("#commentField").show();
 </div>
 </div>
 <br>
-<button type="submit" class="btn btn-primary">提交</button>
+<button type="submit" class="btn btn-primary" id="commentButton">提交</button>
 </form>
 </div>
 

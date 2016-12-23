@@ -62,7 +62,7 @@ class DBOrm{
         tokenStore = AccessTokenStore(connect!)
         tokenStore?.setup()
     }
-    
+    //博客相关的数据库操作
     func getListForView() -> [Any]{
         var data = [Any]()
         do{
@@ -138,6 +138,32 @@ class DBOrm{
         }
         return data
     }
+    
+    func getListForYear(year: String) ->[Any]{
+        var storyArr = [Any]()
+        do{
+            let blog = Blog(connect!)
+            if(year == "All"){
+                try blog.select(columns: ["title","categoryid","readtimes","posttime"], whereclause: "", params: [], orderby: [])
+            }else{
+                let wString = "posttime like '%" + year + "%'"
+                try blog.select(columns: ["title","categoryid","readtimes","posttime"], whereclause: wString, params: [], orderby: [])
+            }
+            
+            for item in blog.rows().reversed(){
+                var contentDict = [String: Any]()
+                contentDict["title"] = item.title
+                contentDict["categoryid"] = item.categoryid
+                contentDict["readtimes"] = item.readtimes
+                contentDict["posttime"] = item.posttime
+                storyArr.append(contentDict)
+            }
+        }catch{
+            print(error)
+        }
+        return storyArr
+    }
+    
     func getStoryCount() -> Int{
         var count: Int = 0
         do{
@@ -243,6 +269,7 @@ class DBOrm{
         }
         
     }
+    //分类相关的数据库操作
     func getCategory() ->[Any]{
         var data = [Any]()
         do{
@@ -298,7 +325,7 @@ class DBOrm{
         return pageCount
     }
     
-    func getTagPageContext() -> [Any]{
+    func getCategoryPageContext() -> [Any]{
         var countArr = [Any]()
         for i in 0..<self.getCategoryPageCount(){
             countArr.append(["page": 1 + i])
@@ -345,31 +372,8 @@ class DBOrm{
         }
         return yearArr
     }
-    func getListForYear(year: String) ->[Any]{
-        var storyArr = [Any]()
-        do{
-            let blog = Blog(connect!)
-            if(year == "All"){
-                try blog.select(columns: ["title","categoryid","readtimes","posttime"], whereclause: "", params: [], orderby: [])
-            }else{
-                let wString = "posttime like '%" + year + "%'"
-                try blog.select(columns: ["title","categoryid","readtimes","posttime"], whereclause: wString, params: [], orderby: [])
-            }
 
-            for item in blog.rows().reversed(){
-                var contentDict = [String: Any]()
-                contentDict["title"] = item.title
-                contentDict["categoryid"] = item.categoryid
-                contentDict["readtimes"] = item.readtimes
-                contentDict["posttime"] = item.posttime
-                storyArr.append(contentDict)
-            }
-        }catch{
-            print(error)
-        }
-        return storyArr
-    }
-    func deleteTag(tag: String){
+    func deleteCategory(tag: String){
         do{
             let category = Category(connect!)
             let blog = Blog(connect!)
@@ -386,7 +390,7 @@ class DBOrm{
             }
     }
     //newTag需要先校验，看是否存在，如果不存在再赋给oldTag
-    func editTag(oldTag: String, newTag: String){
+    func editCategory(oldTag: String, newTag: String){
         do{
             let category = Category(connect!)
             try category.select(columns: ["id"], whereclause: "name = $1", params: [oldTag], orderby: [])
@@ -398,6 +402,8 @@ class DBOrm{
             print(error)
         }
     }
+    
+    //评论相关的数据库操作
     func changeCommentStatus(titlesanitized: String){
         do{
             let blog = Blog(connect!)
@@ -413,5 +419,43 @@ class DBOrm{
         }catch{
             print(error)
         }
+    }
+    
+    func setComment(comment: (visitor: String, email: String, cposttime: String, cbody: String, titleSanitized: String, uniqueID: String)){
+        do{
+            let com = Comment(connect!)
+            let blog = Blog(connect!)
+            try blog.select(columns: ["id"], whereclause: "titlesanitized = :1", params: [comment.titleSanitized], orderby: [])
+            if(blog.rows().count == 1){
+                let _ = try com.insert(cols: ["uniqueID", "visitor", "email", "cposttime", "cbody", "blogid"], params: [comment.uniqueID, comment.visitor, comment.email, comment.cposttime, comment.cbody, blog.rows()[0].id])
+            }
+
+        }catch{
+            print(error)
+        }
+    }
+    func getComment(_ titleSanitized: String) -> [String: Any]{
+        var comments = [String: Any]()
+        do{
+            let com = Comment(connect!)
+            let blog = Blog(connect!)
+            try blog.select(columns: ["id"], whereclause: "titlesanitized = :1", params: [titleSanitized], orderby: [])
+            if(blog.rows().count == 1){
+                try com.select(columns: [], whereclause: "blogid = $1", params: [blog.rows()[0].id], orderby: [])
+                var comment = [Any]()
+                for c in com.rows().reversed(){
+                    var contentDict = [String: String]()
+                    contentDict["visitor"] = c.visitor
+                    contentDict["cposttime"] = c.cposttime
+                    contentDict["cbody"] = c.cbody
+                    comment.append(contentDict)
+                }
+                comments["comments"] = comment
+            }
+            
+        }catch{
+            print(error)
+        }
+        return comments
     }
 }

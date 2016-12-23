@@ -71,7 +71,7 @@ public class BlogAdmin{
         let data = dbHandler.getCategoryByPage(page: page)
         let scratchPad = request.scratchPad
         var context: [String: Any] = [
-            "count": dbHandler.getTagPageContext(),
+            "count": dbHandler.getCategoryPageContext(),
             "previous": {(previous: String, context: MustacheEvaluationContext) -> String in
                 return String(Int(page)! - 1 <= 0 ? 1 : Int(page)! - 1)
             },
@@ -147,7 +147,7 @@ public class BlogAdmin{
     }
     open static func deleteTag(request: HTTPRequest, _ response: HTTPResponse){
         let rmTag = request.urlVariables["tag"] ?? ""
-        dbHandler.deleteTag(tag: rmTag)
+        dbHandler.deleteCategory(tag: rmTag)
         response.redirect(path: "/admin/manage")
         
     }
@@ -179,7 +179,7 @@ public class BlogAdmin{
             makeTagGET(request: request, response)
             return
         }
-        dbHandler.editTag(oldTag: oldTag, newTag: newTag)
+        dbHandler.editCategory(oldTag: oldTag, newTag: newTag)
         response.redirect(path: "/admin/manage")
     }
     
@@ -219,4 +219,5 @@ public class BlogAdmin{
         dbHandler.changeCommentStatus(titlesanitized: titlesanitized)
         response.redirect(path: "/admin/storymanage")
     }
+    
 }

@@ -37,6 +37,7 @@ public class PageHandlers{
         var context: [String: Any]  = [String: Any]()
         let titleSanitized = request.urlVariables["titlesanitized"] ?? ""
         let data = dbHandler.getStory(titleSanitized)
+        let comments = dbHandler.getComment(titleSanitized)
         print(data)
         if data["title"] == nil{
             context["title"] = "错误"
@@ -44,15 +45,20 @@ public class PageHandlers{
             context["posttime"] = ""
         }else {
             context["title"] = data["title"]
+            context["titleSanitized"] = titleSanitized
             context["body"] = data["body"]
             context["posttime"] = data["posttime"]
             context["user_name"] = data["user_name"]
             context["category_name"] = data["category_name"]
             context["iscomment"] = data["iscomment"]
             context["istopped"] = data["istopped"]
+            context["comments"] = comments["comments"]
         }
         context["accountID"] = request.user.authDetails?.account.uniqueID ?? ""
         context["authenticated"] = request.user.authenticated
+        for key in request.scratchPad.keys {
+            context[key] = request.scratchPad[key]
+        }
         response.renderWithDate(template: "story", context: context)
     }
     
@@ -70,4 +76,23 @@ public class PageHandlers{
         context["authenticated"] = request.user.authenticated
         response.renderWithDate(template: "list", context: context)
     }
+    
+    open static func insertComment(request: HTTPRequest, _ response: HTTPResponse){
+        let titleSanitized = request.urlVariables["titlesanitized"] ?? ""
+        let visitor = request.param(name: "visitor") ?? ""
+        let email = request.param(name: "email") ?? ""
+        let cbody = request.param(name: "cbody") ?? ""
+        guard visitor != "", email != "", cbody != "" else{
+            response.request.scratchPad["flash"] = "请输入评论的必要字段"
+            makeStoryQuery(request: request, response)
+            return
+        }
+        let date = Date()
+        let timeFormatter = DateFormatter()
+        timeFormatter.dateFormat = "yyyy-MM-dd"
+        let strNowTime = timeFormatter.string(from: date) as String
+        dbHandler.setComment(comment: (visitor: visitor, email: email, cposttime: strNowTime, cbody: cbody, titleSanitized: titleSanitized, uniqueID: UUID().string))
+        response.redirect(path: "/story/\(titleSanitized)")
+    }
+    
 }

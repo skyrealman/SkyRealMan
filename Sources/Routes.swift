@@ -23,6 +23,6 @@ public func makeRoutes() -> Routes {
         let handler = StaticFileHandler(documentRoot: "/Users/songzhen/Documents/swift/perfect/skyrealman/webroot/pic")
         handler.handleRequest(request: request, response: response)
     })
-
+    routes.add(method: .post, uri: "/story/{titleSanitized}/comment", handler: PageHandlers.insertComment)
     return routes
 }
