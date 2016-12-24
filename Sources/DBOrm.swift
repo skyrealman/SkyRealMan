@@ -108,8 +108,9 @@ class DBOrm{
                 groupBy: [])
             let category = Category(connect!)
             if(blog.rows().count > 0){
-                for item in blog.rows().reversed(){
+                for (index,item) in blog.rows().reversed().enumerated(){
                     var contentDict = [String: String]()
+                    contentDict["num"] = String(index + 1)
                     contentDict["title"] = item.title
                     contentDict["posttime"] = item.posttime
                     contentDict["titlesanitized"] = item.titlesanitized
@@ -343,8 +344,9 @@ class DBOrm{
             try category.select(columns:["id", "name"], whereclause: "", params: [], orderby: [], cursor: thisCursor, joins: [], having: [], groupBy: [])
 
             if(category.rows().count > 0){
-                for item in category.rows(){
+                for (index,item) in category.rows().enumerated(){
                     var contentDict = [String: Any]()
+                    contentDict["num"] = index + 1
                     contentDict["id"] = item.id
                     contentDict["name"] = item.name
                     data.append(contentDict)
@@ -404,10 +406,10 @@ class DBOrm{
     }
     
     //评论相关的数据库操作
-    func changeCommentStatus(titlesanitized: String){
+    func changeCommentStatus(by titleSanitized: String){
         do{
             let blog = Blog(connect!)
-            try blog.select(columns: ["id", "iscomment"], whereclause: "titlesanitized = $1", params: [titlesanitized], orderby: [])
+            try blog.select(columns: ["id", "iscomment"], whereclause: "titlesanitized = :1", params: [titleSanitized], orderby: [])
             if(blog.rows().count == 1){
                 if(blog.rows()[0].isComment == 0){
                     try blog.update(cols: ["iscomment"], params: [1], idName: "id", idValue: blog.rows()[0].id)
@@ -434,7 +436,7 @@ class DBOrm{
             print(error)
         }
     }
-    func getComment(_ titleSanitized: String) -> [String: Any]{
+    func getComments(by titleSanitized: String) -> [String: Any]{
         var comments = [String: Any]()
         do{
             let com = Comment(connect!)
@@ -448,6 +450,7 @@ class DBOrm{
                     contentDict["visitor"] = c.visitor
                     contentDict["cposttime"] = c.cposttime
                     contentDict["cbody"] = c.cbody
+                    contentDict["uniqueid"] = c.uniqueID
                     comment.append(contentDict)
                 }
                 comments["comments"] = comment
@@ -457,5 +460,44 @@ class DBOrm{
             print(error)
         }
         return comments
+    }
+    func getCommentCount(by titleSanitized: String) -> Int{
+        var commentCount = 0
+        do{
+            let com = Comment(connect!)
+            let blog = Blog(connect!)
+            try blog.select(columns: ["id"], whereclause: "titlesanitized = :1", params: [titleSanitized], orderby: [])
+            if(blog.rows().count == 1){
+                try com.select(columns: [], whereclause: "blogid = :1", params: [blog.rows()[0].id], orderby: [])
+                commentCount = com.rows().count
+            }
+
+        }catch{
+            print(error)
+        }
+        
+        return commentCount
+    }
+    func getComment(by uniqueID: String) -> [String: String]{
+        var context = [String: String]()
+        do{
+            let com = Comment(connect!)
+            try com.select(columns: [], whereclause: "uniqueID = :1", params: [uniqueID], orderby: [])
+            if(com.rows().count == 1){
+                context["quotevisitor"] = com.rows()[0].visitor
+                context["quotebody"] = com.rows()[0].cbody
+            }
+        }catch{
+            print(error)
+        }
+        return context
+    }
+    func deleteComment(by uniqueID: String){
+        do{
+            let com = Comment(connect!)
+            try com.delete(id: uniqueID)
+        }catch{
+            print(error)
+        }
     }
 }

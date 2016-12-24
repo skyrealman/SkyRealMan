@@ -37,7 +37,8 @@ public class PageHandlers{
         var context: [String: Any]  = [String: Any]()
         let titleSanitized = request.urlVariables["titlesanitized"] ?? ""
         let data = dbHandler.getStory(titleSanitized)
-        let comments = dbHandler.getComment(titleSanitized)
+        let comments = dbHandler.getComments(by: titleSanitized)
+        let commentCount = dbHandler.getCommentCount(by: titleSanitized)
         print(data)
         if data["title"] == nil{
             context["title"] = "错误"
@@ -53,6 +54,7 @@ public class PageHandlers{
             context["iscomment"] = data["iscomment"]
             context["istopped"] = data["istopped"]
             context["comments"] = comments["comments"]
+            context["commentcount"] = commentCount
         }
         context["accountID"] = request.user.authDetails?.account.uniqueID ?? ""
         context["authenticated"] = request.user.authenticated
@@ -89,10 +91,20 @@ public class PageHandlers{
         }
         let date = Date()
         let timeFormatter = DateFormatter()
-        timeFormatter.dateFormat = "yyyy-MM-dd"
+        timeFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
         let strNowTime = timeFormatter.string(from: date) as String
         dbHandler.setComment(comment: (visitor: visitor, email: email, cposttime: strNowTime, cbody: cbody, titleSanitized: titleSanitized, uniqueID: UUID().string))
         response.redirect(path: "/story/\(titleSanitized)")
     }
-    
+    open static func quoteComment(request: HTTPRequest, _ response: HTTPResponse){
+        let uniqueID = request.urlVariables["uniqueid"] ?? ""
+        let context = dbHandler.getComment(by: uniqueID)
+        response.setHeader(.contentType, value: "application/json")
+        do{
+            try response.setBody(json: context)
+        }catch{
+            print(error)
+        }
+        response.completed()
+    }
 }

@@ -24,5 +24,6 @@ public func makeRoutes() -> Routes {
         handler.handleRequest(request: request, response: response)
     })
     routes.add(method: .post, uri: "/story/{titleSanitized}/comment", handler: PageHandlers.insertComment)
+    routes.add(method: .get, uri: "/story/quote/{uniqueid}", handler: PageHandlers.quoteComment)
     return routes
 }

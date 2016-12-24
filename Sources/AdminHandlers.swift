@@ -199,7 +199,6 @@ public class BlogAdmin{
     open static func getStoryAPI(request: HTTPRequest, _ response: HTTPResponse){
         let title = request.urlVariables["title"] ?? ""
         let data = dbHandler.getStory(title.transformToLatinStripDiacritics().slugify())
-        //response.setHeader(.contentType, value: "application/json")
         response.setHeader(.contentType, value: "application/json")
         do{
             try response.setBody(json: data)
@@ -216,8 +215,13 @@ public class BlogAdmin{
     }
     open static func changeCommentStatus(request: HTTPRequest, _ response: HTTPResponse){
         let titlesanitized = request.urlVariables["titlesanitized"] ?? ""
-        dbHandler.changeCommentStatus(titlesanitized: titlesanitized)
+        dbHandler.changeCommentStatus(by: titlesanitized)
         response.redirect(path: "/admin/storymanage")
     }
-    
+    open static func deleteComment(request: HTTPRequest, _ response: HTTPResponse){
+        let uniqueID = request.urlVariables["uniqueid"] ?? ""
+        let titlesanitized = request.urlVariables["titlesanitized"] ?? ""
+        dbHandler.deleteComment(by: uniqueID)
+        response.redirect(path: "/story/\(titlesanitized)")
+    }
 }

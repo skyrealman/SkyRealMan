@@ -8,6 +8,20 @@ $("#commentField").hide();
 if({{iscomment}} == 1){
 $("#commentField").show();
 }
+if({{commentcount}} == 0){
+$("#comments").hide();
+}else{
+$("#comments").show();
+}
+
+$(".quote").click(function(){
+var abc = $(this).attr("abc")
+$.get("/story/quote/" + abc, function(data){
+var str = "<blockquote>" + "\n" + "<pre>引用" + data.quotevisitor +"的发言：</pre>" + "\n" + data.quotebody + "\n" + "</blockquote>" + "\n"
+$("#commentbody").text(str)
+});
+
+});
 });
 
 </script>
@@ -24,12 +38,16 @@ $("#commentField").show();
 <br>
 <br>
 <div id="comments">
-<h3>留言</h3>
+<h3>留言&nbsp;({{commentcount}}条)</h3>
 <hr/>
 {{#comments}}
 <p><b>{{visitor}}</b>&nbsp;&nbsp;说：</p>
-<p style="text-indent: 2em;">{{cbody}}</p>
-<p style="text-align: right;">{{cposttime}}</p>
+<p style="text-indent: 2em;">{{{cbody}}}</p>
+<p style="text-align: right;">{{cposttime}} | <a class="quote" href = "#commentbody" abc={{uniqueid}}>引用</a>
+{{#authenticated}}
+| <a href="/story/{{titleSanitized}}/delete/{{uniqueid}}">删除</a>
+{{/authenticated}}
+</p>
 <hr/>
 {{/comments}}
 </div>
