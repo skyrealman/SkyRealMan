@@ -130,7 +130,7 @@ class DBOrm{
                     contentDict["tag"] = category.name
                     
                     data.append(contentDict)
-                    print(contentDict["tag"] ?? "null")
+                    //print(contentDict["tag"] ?? "null")
                 }
                 
             }
@@ -211,7 +211,7 @@ class DBOrm{
             data["user_name"] = users.username
             data["category_name"] = category.rows()[0].name
 
-            print("=====" + String(blog.rows()[0].isComment))
+            //print("=====" + String(blog.rows()[0].isComment))
         }catch{
             print(error)
         }
@@ -499,5 +499,10 @@ class DBOrm{
         }catch{
             print(error)
         }
+    }
+    func uploadFile() -> String{
+        var filePath = ""
+        
+        return filePath
     }
 }

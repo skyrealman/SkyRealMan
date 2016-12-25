@@ -16,6 +16,7 @@ import TurnstileCrypto
 import TurnstileWeb
 import PerfectLogger
 import PerfectMustache
+import PerfectLib
 public class BlogAdmin{
     open static func makeLoginGET(request: HTTPRequest, _ response: HTTPResponse){
         response.renderWithDate(template: "login")
@@ -131,6 +132,12 @@ public class BlogAdmin{
         response.renderWithDate(template: "admin/prepare", context: context)
     }
     open static func makeStoryInsertPOST(request: HTTPRequest, _ response: HTTPResponse){
+        let fileDir = Dir(Dir.workingDir.path + "files")
+        do{
+            try fileDir.create()
+        }catch{
+            print(error)
+        }
         guard let title = request.param(name: "title"), let body = request.param(name: "body"), !title.isEmpty, !body.isEmpty else{
             response.renderWithDate(template: "admin/prepare", context: ["flash": "请输入标题与正文"])
             return
@@ -142,6 +149,27 @@ public class BlogAdmin{
         let isTopped = request.param(name: "istopped") ?? "0"
         let isComment = request.param(name: "iscomment") ?? "0"
         let userId = request.user.authDetails?.account.uniqueID ?? ""
+        if let uploads = request.postFileUploads, uploads.count > 0{
+            var ary = [[String:Any]]()
+            
+            for upload in uploads {
+                ary.append([
+                    "fieldName": upload.fieldName,
+                    "contentType": upload.contentType,
+                    "fileName": upload.fileName,
+                    "fileSize": upload.fileSize,
+                    "tmpFileName": upload.tmpFileName
+                    ])
+                let thisFile = File(upload.tmpFileName)
+                do{
+                    print(fileDir.path)
+                    let _ = try thisFile.moveTo(path: fileDir.path + upload.fileName, overWrite: true)
+                }catch{
+                    print(error)
+                }
+            }
+
+        }
         dbHandler.setStory((title: title, body: body, tag: tag, userId: userId, isTopped: isTopped, isComment: isComment))
         response.redirect(path: "/story/\(title.transformToLatinStripDiacritics().slugify())")
     }
