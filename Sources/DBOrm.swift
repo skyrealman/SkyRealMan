@@ -22,9 +22,11 @@ class DBOrm{
         let blog = Blog(connect!)
         let category = Category(connect!)
         let comment = Comment(connect!)
+        let attachment = Attachment(connect!)
         blog.setup()
         category.setup()
         comment.setup()
+        attachment.setup()
     }
     func populate(){
         let blog_data = [
@@ -500,9 +502,16 @@ class DBOrm{
             print(error)
         }
     }
-    func uploadFile() -> String{
-        var filePath = ""
-        
-        return filePath
+    func setAttachment(attach: (uniqueID: String, oldName: String, fileSize: Int, titleSanitized: String)){
+        do{
+            let attachment = Attachment(connect!)
+            let blog = Blog(connect!)
+            try blog.select(columns: ["id"], whereclause: "titlesanitized = :1", params: [attach.titleSanitized], orderby: [])
+            if(blog.rows().count == 1){
+                let _ = try attachment.insert(cols: ["uniqueID", "oldname", "filesize", "blogid"], params: [attach.uniqueID, attach.oldName, attach.fileSize, blog.rows()[0].id])
+            }
+        }catch{
+            print(error)
+        }
     }
 }

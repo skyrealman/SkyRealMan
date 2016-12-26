@@ -19,5 +19,12 @@ $(function(){
         $("#deleteStoryModal").modal('show')
         $("#del").attr("href", "/admin/storymanage/delete/" + $(this).attr("abc"));
   });
+  $("#inputbutton").fileinput({
+        showUpload: true,
+        showRemove: true,
+        language: "zh",
+        maxFileCount: 5,
+        allowedFileExtensions: ["jpg", "png", "gif"],
+    });
 });
 

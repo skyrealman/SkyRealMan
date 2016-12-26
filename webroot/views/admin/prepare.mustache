@@ -24,10 +24,7 @@ $(".fileinput-upload").click(function(){
 $("#picvalue").attr("value", $("#inputbutton").val())
 });
 });
-$("#inputbutton").fileinput({
-language: "zh",
-allowedFileExtensions: ["jpg", "png", "gif"]
-});
+
 </script>
 
 <ul class="nav nav-tabs">
@@ -89,13 +86,10 @@ allowedFileExtensions: ["jpg", "png", "gif"]
 <label for="body">添加正文</label>
 <textarea class="form-control" name = "body" rows="30" placeholder="请输入正文" id = "storybody"></textarea>
 </div>
-<div class="form-group">
-<input type="hidden" id="picvalue" />
-</div>
 <button type = "submit" class="btn btn-primary">提交</button>
 <hr>
 <label for="attache">上传附件</label>
-<input id="inputbutton" name="inputzh[]" type = "file" class="file">
+<input id="inputbutton" name="inputimage" type = "file" class="file" multiple>
 </form>
 
 

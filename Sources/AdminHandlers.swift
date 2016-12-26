@@ -132,12 +132,6 @@ public class BlogAdmin{
         response.renderWithDate(template: "admin/prepare", context: context)
     }
     open static func makeStoryInsertPOST(request: HTTPRequest, _ response: HTTPResponse){
-        let fileDir = Dir(Dir.workingDir.path + "files")
-        do{
-            try fileDir.create()
-        }catch{
-            print(error)
-        }
         guard let title = request.param(name: "title"), let body = request.param(name: "body"), !title.isEmpty, !body.isEmpty else{
             response.renderWithDate(template: "admin/prepare", context: ["flash": "请输入标题与正文"])
             return
@@ -149,28 +143,8 @@ public class BlogAdmin{
         let isTopped = request.param(name: "istopped") ?? "0"
         let isComment = request.param(name: "iscomment") ?? "0"
         let userId = request.user.authDetails?.account.uniqueID ?? ""
-        if let uploads = request.postFileUploads, uploads.count > 0{
-            var ary = [[String:Any]]()
-            
-            for upload in uploads {
-                ary.append([
-                    "fieldName": upload.fieldName,
-                    "contentType": upload.contentType,
-                    "fileName": upload.fileName,
-                    "fileSize": upload.fileSize,
-                    "tmpFileName": upload.tmpFileName
-                    ])
-                let thisFile = File(upload.tmpFileName)
-                do{
-                    print(fileDir.path)
-                    let _ = try thisFile.moveTo(path: fileDir.path + upload.fileName, overWrite: true)
-                }catch{
-                    print(error)
-                }
-            }
-
-        }
         dbHandler.setStory((title: title, body: body, tag: tag, userId: userId, isTopped: isTopped, isComment: isComment))
+        fileUpload(request: request, response)
         response.redirect(path: "/story/\(title.transformToLatinStripDiacritics().slugify())")
     }
     open static func deleteTag(request: HTTPRequest, _ response: HTTPResponse){
@@ -251,5 +225,42 @@ public class BlogAdmin{
         let titlesanitized = request.urlVariables["titlesanitized"] ?? ""
         dbHandler.deleteComment(by: uniqueID)
         response.redirect(path: "/story/\(titlesanitized)")
+    }
+    open static func fileUpload(request: HTTPRequest, _ response: HTTPResponse){
+        let fileDir = Dir(Dir.workingDir.path + "files")
+        guard let title = request.param(name: "title") else{
+            return
+        }
+        
+        do{
+            try fileDir.create()
+        }catch{
+            print(error)
+        }
+        if let uploads = request.postFileUploads, uploads.count > 0{
+            var ary = [[String: Any]]()
+            for upload in uploads{
+                ary.append([
+                    "fieldName": upload.fieldName,
+                    "contentType": upload.contentType,
+                    "fileName": upload.fieldName,
+                    "fileSize": upload.fileSize,
+                    "tmpFileName": upload.tmpFileName
+                    ])
+                do{
+                    if(upload.tmpFileName != ""){
+                        let thisFile = File(upload.tmpFileName)
+                        let tmp = upload.fileName.split(".")
+                        let extendName = tmp[tmp.count - 1]
+                        
+                        let uid = UUID().string
+                        dbHandler.setAttachment(attach: (uniqueID: uid, oldName: upload.fileName, fileSize: upload.fileSize,titleSanitized: title.transformToLatinStripDiacritics().slugify()))
+                        let _ = try thisFile.moveTo(path: fileDir.path + uid + "." + extendName, overWrite: true)
+                    }
+                }catch{
+                    print(error)
+                }
+            }
+        }
     }
 }
