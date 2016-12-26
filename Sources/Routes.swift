@@ -20,7 +20,13 @@ public func makeRoutes() -> Routes {
     routes.add(method: .get, uri: "/files/**", handler: {
         request, response in
         request.path = request.urlVariables[routeTrailingWildcardKey]!
-        let handler = StaticFileHandler(documentRoot: "/Users/songzhen/Documents/swift/perfect/skyrealman/webroot/pic")
+        let handler = StaticFileHandler(documentRoot: "/Users/songzhen/Documents/swift/perfect/skyrealman/webroot/img")
+        handler.handleRequest(request: request, response: response)
+    })
+    routes.add(method: .get, uri: "/attachment/**", handler: {
+        request, response in
+        request.path = request.urlVariables[routeTrailingWildcardKey]!
+        let handler = StaticFileHandler(documentRoot: "/Users/songzhen/Documents/swift/perfect/skyrealman/files/")
         handler.handleRequest(request: request, response: response)
     })
     routes.add(method: .post, uri: "/story/{titleSanitized}/comment", handler: PageHandlers.insertComment)

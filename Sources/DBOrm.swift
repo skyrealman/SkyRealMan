@@ -502,7 +502,7 @@ class DBOrm{
             print(error)
         }
     }
-    func setAttachment(attach: (uniqueID: String, oldName: String, fileSize: Int, titleSanitized: String)){
+    func setAttachment(attach: (uniqueID: String, oldName: String, fileSize: String, titleSanitized: String)){
         do{
             let attachment = Attachment(connect!)
             let blog = Blog(connect!)

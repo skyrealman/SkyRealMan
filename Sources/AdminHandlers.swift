@@ -144,7 +144,15 @@ public class BlogAdmin{
         let isComment = request.param(name: "iscomment") ?? "0"
         let userId = request.user.authDetails?.account.uniqueID ?? ""
         dbHandler.setStory((title: title, body: body, tag: tag, userId: userId, isTopped: isTopped, isComment: isComment))
-        fileUpload(request: request, response)
+        
+        let params = request.postParams
+        for param in params{
+            if param.0.contains("file"){
+                let str = param.1.split("|")
+                dbHandler.setAttachment(attach: (uniqueID:str[2], oldName: str[1], fileSize: str[0], title.transformToLatinStripDiacritics().slugify()))
+            }
+        }
+        
         response.redirect(path: "/story/\(title.transformToLatinStripDiacritics().slugify())")
     }
     open static func deleteTag(request: HTTPRequest, _ response: HTTPResponse){
@@ -228,9 +236,6 @@ public class BlogAdmin{
     }
     open static func fileUpload(request: HTTPRequest, _ response: HTTPResponse){
         let fileDir = Dir(Dir.workingDir.path + "files")
-        guard let title = request.param(name: "title") else{
-            return
-        }
         
         do{
             try fileDir.create()
@@ -240,27 +245,39 @@ public class BlogAdmin{
         if let uploads = request.postFileUploads, uploads.count > 0{
             var ary = [[String: Any]]()
             for upload in uploads{
-                ary.append([
+                var fileInfo: [String: Any] = [
                     "fieldName": upload.fieldName,
                     "contentType": upload.contentType,
-                    "fileName": upload.fieldName,
+                    "fileName": upload.fileName,
                     "fileSize": upload.fileSize,
                     "tmpFileName": upload.tmpFileName
-                    ])
+                    ]
                 do{
                     if(upload.tmpFileName != ""){
                         let thisFile = File(upload.tmpFileName)
                         let tmp = upload.fileName.split(".")
                         let extendName = tmp[tmp.count - 1]
-                        
                         let uid = UUID().string
-                        dbHandler.setAttachment(attach: (uniqueID: uid, oldName: upload.fileName, fileSize: upload.fileSize,titleSanitized: title.transformToLatinStripDiacritics().slugify()))
+                        let path = "/attachment/" + uid + "." + extendName
+                        fileInfo["filePath"] = path
+                        fileInfo["fileUID"] = uid
                         let _ = try thisFile.moveTo(path: fileDir.path + uid + "." + extendName, overWrite: true)
+                        
                     }
                 }catch{
                     print(error)
                 }
+               ary.append(fileInfo)
             }
+            let context = ["file": ary]
+            response.setHeader(.contentType, value: "application/json")
+            
+            do{
+                try response.setBody(json: context)
+            }catch{
+                print(error)
+            }
+            response.completed()
         }
     }
 }

@@ -12,7 +12,7 @@ import SQLiteStORM
 open class Attachment: SQLiteStORM{
     public var uniqueID: String = ""
     public var oldName: String = ""
-    public var fileSize: Int = 0
+    public var fileSize: String = ""
     public var blogid: Int = 0
     
     
@@ -22,7 +22,7 @@ open class Attachment: SQLiteStORM{
     override open func to(_ this: StORMRow){
         uniqueID = this.data["uniqueID"] as! String
         oldName = this.data["oldname"] as! String
-        fileSize = this.data["filesize"] as! Int
+        fileSize = this.data["filesize"] as! String
         blogid = this.data["blogid"] as! Int
     }
     func rows() -> [Attachment]{
@@ -36,7 +36,7 @@ open class Attachment: SQLiteStORM{
     }
     public func setup() {
         do{
-            try sqlExec("CREATE TABLE IF NOT EXISTS attachment(uniqueID TEXT PRIMARY KEY NOT NULL, oldname TEXT, filesize INTEGER, blogid INTEGER)")
+            try sqlExec("CREATE TABLE IF NOT EXISTS attachment(uniqueID TEXT PRIMARY KEY NOT NULL, oldname TEXT, filesize TEXT, blogid INTEGER)")
         }catch{
             print(error)
         }

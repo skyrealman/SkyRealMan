@@ -22,9 +22,22 @@ $(function(){
   $("#inputbutton").fileinput({
         showUpload: true,
         showRemove: true,
+        dropZoneEnabled: false,
         language: "zh",
         maxFileCount: 5,
         allowedFileExtensions: ["jpg", "png", "gif"],
+        uploadUrl: "/admin/upload",
     });
+  $("#inputbutton").on("fileuploaded", function(event, data, previewId, index){
+        var form = data.form, files = data.files, extra = data.extra, response = data.response, reader = data.reader
+        var value = response.file[0].fileSize + "|" + response.file[0].fileName + "|" + response.file[0].fileUID
+        var content = "<input type='hidden' name='file"
+        content += index + "' value='"
+        content += value
+        content += "'>"
+        $("#attachdata").append(content)
+        var str = $("#storybody").val() + "<br><img src='" + response.file[0].filePath + "' width='600'/>"
+        $("#storybody").val(str)
+    })
 });
 

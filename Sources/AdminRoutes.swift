@@ -50,5 +50,7 @@ public func makeAdminRoutes() -> Routes{
     routes.add(method: .get, uri: "/admin/storymanage/comment/{titlesanitized}", handler: BlogAdmin.changeCommentStatus)
     
     routes.add(method: .get, uri: "/story/{titlesanitized}/delete/{uniqueid}", handler: BlogAdmin.deleteComment)
+    
+    routes.add(method: .post, uri: "/admin/upload", handler: BlogAdmin.fileUpload)
     return routes
 }
