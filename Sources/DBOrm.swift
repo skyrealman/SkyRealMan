@@ -206,7 +206,7 @@ class DBOrm{
             try users.select(columns: [], whereclause: "uniqueID = :1", params: [blog.rows()[0].authorid], orderby: [])
             //print(users)
             data["title"] = blog.rows()[0].title
-            data["body"] = blog.rows()[0].body
+            data["body"] = blog.rows()[0].body.replacingOccurrences(of: "<br>", with: "\n")
             data["posttime"] = blog.rows()[0].posttime
             data["istopped"] = String(blog.rows()[0].isTopped)
             data["iscomment"] = String(blog.rows()[0].isComment)
@@ -236,20 +236,13 @@ class DBOrm{
             }
             let title = story.title
             let titlesanitized = story.title.transformToLatinStripDiacritics().slugify()
-            let body = story.body
-            var synopsis = ""
-            if (body.characters.count <= 50){
-                synopsis = body
-            }else{
-                let index = body.index(body.startIndex, offsetBy: 50)
-                synopsis = body.substring(to: index)
-            }
+            let body = story.body.replacingOccurrences(of: "\n", with: "<br>", options: String.CompareOptions.regularExpression, range: nil)
+            let synopsis = BlogHelper.makeSynopsis(by: body)
             let posttime = strNowTime
             let authorid = story.userId
             let isTopped = story.isTopped
             let isComment = story.isComment
             if blog.exists(title){
-                print("here")
                 try blog.select(columns: ["id", "posttime", "authorid"], whereclause: "title = :1", params: [title], orderby: [])
                 try blog.update(cols: ["title","titlesanitized", "synopsis", "body", "posttime", "authorid", "categoryid", "readtimes", "istopped", "iscomment"], params: [title, titlesanitized, synopsis, body, blog.rows()[0].posttime, blog.rows()[0].authorid, tag, 0, isTopped, isComment], idName: "id", idValue: blog.rows()[0].id)
             }else{
