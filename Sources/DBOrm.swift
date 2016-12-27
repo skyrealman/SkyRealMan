@@ -206,13 +206,40 @@ class DBOrm{
             try users.select(columns: [], whereclause: "uniqueID = :1", params: [blog.rows()[0].authorid], orderby: [])
             //print(users)
             data["title"] = blog.rows()[0].title
-            data["body"] = blog.rows()[0].body.replacingOccurrences(of: "<br>", with: "\n")
+            
+            data["body"] = blog.rows()[0].body
             data["posttime"] = blog.rows()[0].posttime
             data["istopped"] = String(blog.rows()[0].isTopped)
             data["iscomment"] = String(blog.rows()[0].isComment)
             data["user_name"] = users.username
             data["category_name"] = category.rows()[0].name
 
+            //print("=====" + String(blog.rows()[0].isComment))
+        }catch{
+            print(error)
+        }
+        return data
+    }
+    func getStoryForEdit(_ storyid: String) -> [String: String]{
+        var data = [String: String]()
+        
+        do {
+            let blog = Blog(connect!)
+            let category = Category(connect!)
+            let users = AuthAccount(connect!)
+            try blog.select(columns: ["title", "body", "posttime", "authorid", "categoryid", "istopped", "iscomment"], whereclause: "titlesanitized = :1", params: [storyid], orderby: [])
+            try category.select(columns: ["name"], whereclause: "id = :1", params:[blog.rows()[0].categoryid], orderby: [])
+            try users.select(columns: [], whereclause: "uniqueID = :1", params: [blog.rows()[0].authorid], orderby: [])
+            //print(users)
+            data["title"] = blog.rows()[0].title
+            
+            data["body"] = blog.rows()[0].body.replacingOccurrences(of: "<br>", with: "\n")
+            data["posttime"] = blog.rows()[0].posttime
+            data["istopped"] = String(blog.rows()[0].isTopped)
+            data["iscomment"] = String(blog.rows()[0].isComment)
+            data["user_name"] = users.username
+            data["category_name"] = category.rows()[0].name
+            
             //print("=====" + String(blog.rows()[0].isComment))
         }catch{
             print(error)
@@ -236,7 +263,7 @@ class DBOrm{
             }
             let title = story.title
             let titlesanitized = story.title.transformToLatinStripDiacritics().slugify()
-            let body = story.body.replacingOccurrences(of: "\n", with: "<br>", options: String.CompareOptions.regularExpression, range: nil)
+            let body = story.body
             let synopsis = BlogHelper.makeSynopsis(by: body)
             let posttime = strNowTime
             let authorid = story.userId
@@ -495,6 +522,22 @@ class DBOrm{
             print(error)
         }
     }
+    func deleteCommentsByStory(_ titlesanitized: String){
+        do{
+            let com = Comment(connect!)
+            let blog = Blog(connect!)
+            try blog.select(columns: ["id"], whereclause: "titlesanitized = :1", params: [titlesanitized], orderby: [])
+            if(blog.rows().count == 1){
+                try com.select(columns: [], whereclause: "blogid = :1", params: [blog.rows()[0].id], orderby: [])
+                for c in com.rows(){
+                    try com.delete(id: c.uniqueID)
+                }
+            }
+
+        }catch{
+            print(error)
+        }
+    }
     func setAttachment(attach: (uniqueID: String, oldName: String, fileSize: String, titleSanitized: String)){
         do{
             let attachment = Attachment(connect!)
@@ -503,6 +546,22 @@ class DBOrm{
             if(blog.rows().count == 1){
                 let _ = try attachment.insert(cols: ["uniqueID", "oldname", "filesize", "blogid"], params: [attach.uniqueID, attach.oldName, attach.fileSize, blog.rows()[0].id])
             }
+        }catch{
+            print(error)
+        }
+    }
+    func deleteAttachmentByStory(_ titlesanitized: String){
+        do{
+            let blog = Blog(connect!)
+            try blog.select(columns: ["id"], whereclause: "titlesanitized = :1", params: [titlesanitized], orderby: [])
+            if(blog.rows().count == 1){
+                let attach = Attachment(connect!)
+                try attach.select(columns: [], whereclause: "blogid = :1", params: [blog.rows()[0].id], orderby: [])
+                for a in attach.rows(){
+                    try attach.delete(id: a.uniqueID)
+                }
+            }
+            
         }catch{
             print(error)
         }

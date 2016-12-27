@@ -32,14 +32,17 @@ public extension Date{
 
 public class BlogHelper{
     open static func makeSynopsis(by body: String) -> String{
-        //let tmp = body.replacingOccurrences(of: "\n", with: " ")
-        let synopsis = body.replacingOccurrences(of: "<[^>]+>", with: " ", options: String.CompareOptions.regularExpression, range: nil)
+        var linesArray: [String] = []
+
+        let result = body.replacingOccurrences(of: "<[^>]+>", with: "", options: String.CompareOptions.regularExpression, range: nil)
+        result.enumerateLines{line, _ in linesArray.append(line)}
+        let synopsis = linesArray.filter{!$0.isEmpty}.joined(separator: "\n")
         
         if synopsis.characters.count <= 100{
             return synopsis
         } else{
             let index = synopsis.index(synopsis.startIndex, offsetBy: 100)
-            return synopsis.substring(to: index) + "..."
+            return (synopsis.substring(to: index) + "...")
         }
     }
 }

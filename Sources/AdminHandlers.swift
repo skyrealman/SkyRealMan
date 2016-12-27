@@ -143,7 +143,9 @@ public class BlogAdmin{
         let isTopped = request.param(name: "istopped") ?? "0"
         let isComment = request.param(name: "iscomment") ?? "0"
         let userId = request.user.authDetails?.account.uniqueID ?? ""
-        dbHandler.setStory((title: title, body: body, tag: tag, userId: userId, isTopped: isTopped, isComment: isComment))
+        let rbody = body.replacingOccurrences(of: "\n", with: "<br>")
+        print(rbody)
+        dbHandler.setStory((title: title, body: rbody, tag: tag, userId: userId, isTopped: isTopped, isComment: isComment))
         
         let params = request.postParams
         for param in params{
@@ -208,7 +210,7 @@ public class BlogAdmin{
     }
     open static func getStoryAPI(request: HTTPRequest, _ response: HTTPResponse){
         let title = request.urlVariables["title"] ?? ""
-        let data = dbHandler.getStory(title.transformToLatinStripDiacritics().slugify())
+        let data = dbHandler.getStoryForEdit(title.transformToLatinStripDiacritics().slugify())
         response.setHeader(.contentType, value: "application/json")
         do{
             try response.setBody(json: data)
@@ -219,6 +221,8 @@ public class BlogAdmin{
     }
     open static func deleteStory(request: HTTPRequest, _ response: HTTPResponse){
         let titlesanitized = request.urlVariables["titlesanitized"] ?? ""
+        dbHandler.deleteCommentsByStory(titlesanitized)
+        dbHandler.deleteAttachmentByStory(titlesanitized)
         dbHandler.deleteStory(titlesanitized)
         response.redirect(path: "/admin/storymanage")
         
@@ -278,6 +282,12 @@ public class BlogAdmin{
                 print(error)
             }
             response.completed()
+        }
+    }
+    open static func deleteFile(request: HTTPRequest, _ response: HTTPResponse){
+        let fileDir = Dir(Dir.workingDir.path + "files")
+        if fileDir.exists{
+            //想想怎么写
         }
     }
 }
