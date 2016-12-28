@@ -248,7 +248,7 @@ class DBOrm{
             let blog = Blog(connect!)
             let category = Category(connect!)
             let users = AuthAccount(connect!)
-            try blog.select(columns: ["title", "body", "posttime", "authorid", "categoryid", "istopped", "iscomment"], whereclause: "titlesanitized = :1", params: [storyid], orderby: [])
+            try blog.select(columns: ["id", "title", "body", "posttime", "authorid", "categoryid", "istopped", "iscomment", "readtimes"], whereclause: "titlesanitized = :1", params: [storyid], orderby: [])
             try category.select(columns: ["name"], whereclause: "id = :1", params:[blog.rows()[0].categoryid], orderby: [])
             try users.select(columns: [], whereclause: "uniqueID = :1", params: [blog.rows()[0].authorid], orderby: [])
             //print(users)
@@ -260,13 +260,14 @@ class DBOrm{
             data["iscomment"] = String(blog.rows()[0].isComment)
             data["user_name"] = users.username
             data["category_name"] = category.rows()[0].name
-
-            //print("=====" + String(blog.rows()[0].isComment))
+            try blog.update(cols: ["readtimes"], params: [blog.rows()[0].readtimes + 1], idName: "id", idValue: blog.rows()[0].id)
+            data["readtimes"] = String(blog.rows()[0].readtimes + 1)
         }catch{
             print(error)
         }
         return data
     }
+    
     func getStoryForEdit(_ storyid: String) -> [String: String]{
         var data = [String: String]()
         
@@ -350,6 +351,7 @@ class DBOrm{
                     var contentDict = [String: Any]()
                     contentDict["id"] = item.id
                     contentDict["name"] = item.name
+                    contentDict["tagcount"] = getStoryCountByCategory(id: item.id)
                     data.append(contentDict)
                 }
             }
@@ -357,6 +359,18 @@ class DBOrm{
             print(error)
         }
         return data
+    }
+    func getStoryCountByCategory(id: Int) -> Int{
+        var count = 0
+        do{
+            let blog = Blog(connect!)
+            try blog.select(columns: [], whereclause: "categoryid = :1", params: [id], orderby: [])
+            count = blog.rows().count
+        }catch{
+            print(error)
+            return count
+        }
+        return count
     }
     //设计有问题，不符合面向函数编程思路，可做为反面例子讲解
     func isCategoryExist(tag: String) -> Bool{
@@ -473,7 +487,6 @@ class DBOrm{
             print(error)
         }
     }
-    
     //评论相关的数据库操作
     func changeCommentStatus(by titleSanitized: String){
         do{

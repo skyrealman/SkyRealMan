@@ -19,7 +19,6 @@ public class PageHandlers{
         let data = dbHandler.getLatestFiveStories()
         let latest = dbHandler.getLatestStory()
         let tags = dbHandler.getCategory()
-
         if tags.count > 0{
             let context: [String: Any] = [
                 "latest": latest,
@@ -57,6 +56,7 @@ public class PageHandlers{
             context["istopped"] = data["istopped"]
             context["comments"] = comments["comments"]
             context["commentcount"] = commentCount
+            context["readtimes"] = data["readtimes"]
         }
         context["accountID"] = request.user.authDetails?.account.uniqueID ?? ""
         context["authenticated"] = request.user.authenticated
