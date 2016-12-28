@@ -12,12 +12,12 @@ import PerfectMustache
 
 public func makeAdminRoutes() -> Routes{
     var routes = Routes()
-    routes.add(method: .get, uri: "/admin/manage", handler: BlogAdmin.makeTagGET)
-    routes.add(method: .post, uri: "/admin/manage", handler: BlogAdmin.makeTagPOST)
+    routes.add(method: .get, uri: "/admin/tagmanage", handler: BlogAdmin.makeTagGET)
+    routes.add(method: .post, uri: "/admin/tagmanage", handler: BlogAdmin.makeTagPOST)
     routes.add(method: .get, uri: "/admin/prepare", handler: BlogAdmin.makeStoryInsertGET)
     routes.add(method: .post, uri: "/admin/prepare", handler: BlogAdmin.makeStoryInsertPOST)
     routes.add(method: .get, uri: "/admin/prepare/edit/{title}", handler: BlogAdmin.editStory)
-    routes.add(method: .get, uri: "/admin/manage/tag/{page}", handler: BlogAdmin.makeTagGET)
+    routes.add(method: .get, uri: "/admin/tagmanage/tag/{page}", handler: BlogAdmin.makeTagGET)
     routes.add(method: .get, uri: "/admin/prepare/api/{title}", handler: BlogAdmin.getStoryAPI)
     routes.add(method: .get, uri: "/admin/check", handler: {
         request, response in
@@ -42,8 +42,8 @@ public func makeAdminRoutes() -> Routes{
     
     routes.add(method: .get, uri: "/register", handler: BlogAdmin.makeRegisterGET)
     routes.add(method: .post, uri: "/register", handler: BlogAdmin.makeRegisterPOST)
-    routes.add(method: .get, uri: "/admin/manage/delete/{tag}", handler: BlogAdmin.deleteTag)
-    routes.add(method: .get, uris: ["/admin/manage/edit/{oldtag}/{newtag}","/admin/manage/edit/{oldtag}/"], handler: BlogAdmin.editTag)
+    routes.add(method: .get, uri: "/admin/tagmanage/delete/{tag}", handler: BlogAdmin.deleteTag)
+    routes.add(method: .get, uris: ["/admin/tagmanage/edit/{oldtag}/{newtag}","/admin/tagmanage/edit/{oldtag}/"], handler: BlogAdmin.editTag)
     routes.add(method: .get, uri: "/admin/storymanage", handler: BlogAdmin.makeManageList)
     routes.add(method: .get, uri: "/admin/storymanage/story/{page}", handler: BlogAdmin.makeManageList)
     routes.add(method: .get, uri: "/admin/storymanage/delete/{titlesanitized}", handler: BlogAdmin.deleteStory)

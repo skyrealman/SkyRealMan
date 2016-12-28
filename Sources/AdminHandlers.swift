@@ -65,7 +65,7 @@ public class BlogAdmin{
     open static func makeTagGET(request: HTTPRequest, _ response: HTTPResponse){
         let page = request.urlVariables["page"] ?? "1"
         guard page.isNumeric() else{
-            response.redirect(path: "/admin/manage")
+            response.redirect(path: "/admin/tagmanage")
             return
         }
         let categoryPageCount = dbHandler.getCategoryPageCount()
@@ -86,7 +86,7 @@ public class BlogAdmin{
         for key in scratchPad.keys {
             context[key] = scratchPad[key]
         }
-        response.renderWithDate(template: "admin/manage", context: context)
+        response.renderWithDate(template: "admin/tagmanage", context: context)
     }
     
     open static func makeTagPOST(request: HTTPRequest, _ response: HTTPResponse){
@@ -160,7 +160,7 @@ public class BlogAdmin{
     open static func deleteTag(request: HTTPRequest, _ response: HTTPResponse){
         let rmTag = request.urlVariables["tag"] ?? ""
         dbHandler.deleteCategory(tag: rmTag)
-        response.redirect(path: "/admin/manage")
+        response.redirect(path: "/admin/tagmanage")
         
     }
     open static func makeManageList(request: HTTPRequest, _ response: HTTPResponse){
@@ -192,7 +192,7 @@ public class BlogAdmin{
             return
         }
         dbHandler.editCategory(oldTag: oldTag, newTag: newTag)
-        response.redirect(path: "/admin/manage")
+        response.redirect(path: "/admin/tagmanage")
     }
     
     open static func editStory(request: HTTPRequest, _ response: HTTPResponse){

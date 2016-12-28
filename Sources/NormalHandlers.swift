@@ -16,11 +16,13 @@ import Foundation
 import PerfectMustache
 public class PageHandlers{
     open static func makeHome(request: HTTPRequest, _ response: HTTPResponse){
-        let data = dbHandler.getListForView()
+        let data = dbHandler.getLatestFiveStories()
+        let latest = dbHandler.getLatestStory()
         let tags = dbHandler.getCategory()
 
         if tags.count > 0{
             let context: [String: Any] = [
+                "latest": latest,
                 "posts": data,
                 "title": "地盒的博客",
                 "accountID": request.user.authDetails?.account.uniqueID ?? "",

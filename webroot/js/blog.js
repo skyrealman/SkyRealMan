@@ -5,13 +5,13 @@ $(function(){
   });
   $(".table tbody th #tagdelete").click(function(){
         $("#deleteTagModal").modal('show');
-        $("#del").attr("href", "/admin/manage/delete/" + $(this).attr("abc"));
+        $("#del").attr("href", "/admin/tagmanage/delete/" + $(this).attr("abc"));
   });
   $(".table tbody th #tagedit").click(function(){
         $("#editTagModal").modal('show');
         var abc = $(this).attr("abc");
         $("#edit").click(function(){
-        $("#edit").attr("href", "/admin/manage/edit/" + abc + "/" + $("#newTag").val());
+        $("#edit").attr("href", "/admin/tagmanage/edit/" + abc + "/" + $("#newTag").val());
         });
         
   });

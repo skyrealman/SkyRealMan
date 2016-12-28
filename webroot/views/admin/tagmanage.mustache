@@ -38,7 +38,7 @@
 <ul class="nav nav-tabs">
 <li role="presentation"><a href="/admin/prepare">编写日志</a></li>
 <li role="presentation"><a href="/admin/storymanage">管理日志</a></li>
-<li role="presentation" class="active"><a href="/admin/manage">管理分类</a></li>
+<li role="presentation" class="active"><a href="/admin/tagmanage">管理分类</a></li>
 </ul>
 <br>
 <form method = "POST" action = "/admin/manage">
@@ -84,17 +84,17 @@
 <nav aria-label="..." style="text-align: right">
 <ul class="pagination">
 <li>
-<a href ="/admin/manage/tag/{{previous}}" aria-label="Previous">
+<a href ="/admin/tagmanage/tag/{{previous}}" aria-label="Previous">
 <span aria-hidden="true"><<</span>
 </a>
 </li>
 {{#count}}
 <li>
-<a href="/admin/manage/tag/{{page}}">{{page}}</a>
+<a href="/admin/tagmanage/tag/{{page}}">{{page}}</a>
 </li>
 {{/count}}
 <li>
-<a href="/admin/manage/tag/{{next}}" aria-label="Next">
+<a href="/admin/tagmanage/tag/{{next}}" aria-label="Next">
 <span sria-hidden="true">>></span>
 </a>
 </li>

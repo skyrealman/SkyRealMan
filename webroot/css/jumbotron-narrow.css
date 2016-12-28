@@ -91,3 +91,13 @@ border-bottom: 0;
     display: block;
     margin:auto;
 }
+#info{
+    color: #C0C0C0;
+}
+#latest li{
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+li.borderless{
+    border: 0 none;
+}
