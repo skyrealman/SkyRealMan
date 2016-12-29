@@ -41,7 +41,7 @@ public class BlogAdmin{
     }
     
     open static func makeRegisterPOST(request: HTTPRequest, _ response: HTTPResponse){
-        guard let username = request.param(name: "username"), let password = request.param(name: "password") else{
+        guard let username = request.param(name: "username"), let password = request.param(name: "password"), username != "", password != "" else{
             response.renderWithDate(template: "register", context: ["flash": "请输入用户名和密码"])
             return
         }
@@ -144,7 +144,6 @@ public class BlogAdmin{
         let isComment = request.param(name: "iscomment") ?? "0"
         let userId = request.user.authDetails?.account.uniqueID ?? ""
         let rbody = body.replacingOccurrences(of: "\n", with: "<br>")
-        print(rbody)
         dbHandler.setStory((title: title, body: rbody, tag: tag, userId: userId, isTopped: isTopped, isComment: isComment))
         
         let params = request.postParams

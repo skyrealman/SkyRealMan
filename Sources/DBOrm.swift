@@ -194,18 +194,20 @@ class DBOrm{
         do{
             let blog = Blog(connect!)
             if(year == "All"){
-                try blog.select(columns: ["title","categoryid","readtimes","posttime"], whereclause: "", params: [], orderby: [])
+                try blog.select(columns: ["title", "titlesanitized", "categoryid", "readtimes", "posttime"], whereclause: "", params: [], orderby: [])
             }else{
                 let wString = "posttime like '%" + year + "%'"
-                try blog.select(columns: ["title","categoryid","readtimes","posttime"], whereclause: wString, params: [], orderby: [])
+                try blog.select(columns: ["title", "titlesanitized", "categoryid", "readtimes", "posttime"], whereclause: wString, params: [], orderby: [])
             }
-            
+            let category = Category(connect!)
             for item in blog.rows().reversed(){
+                try category.select(columns: ["name"], whereclause: "id = :1", params: [item.categoryid], orderby: [])
                 var contentDict = [String: Any]()
                 contentDict["title"] = item.title
-                contentDict["categoryid"] = item.categoryid
+                contentDict["category"] = category.rows()[0].name
                 contentDict["readtimes"] = item.readtimes
                 contentDict["posttime"] = item.posttime
+                contentDict["titlesanitized"] = item.titlesanitized
                 storyArr.append(contentDict)
             }
         }catch{
@@ -213,7 +215,31 @@ class DBOrm{
         }
         return storyArr
     }
-    
+    func getListForCategory(tag: String) ->[Any]{
+        var storyArr = [Any]()
+        do{
+            let category = Category(connect!)
+            print(tag)
+            try category.select(columns: ["id"], whereclause: "name = :1", params: [tag], orderby: [])
+            print("hoho")
+            if(category.rows().count == 1){
+                let blog = Blog(connect!)
+                try blog.select(columns: ["title", "titlesanitized", "posttime", "readtimes"], whereclause: "categoryid = :1", params: [category.rows()[0].id], orderby: [])
+                for item in blog.rows().reversed(){
+                    var contentDict = [String: Any]()
+                    contentDict["title"] = item.title
+                    contentDict["titlesanitized"] = item.titlesanitized
+                    contentDict["readtimes"] = item.readtimes
+                    contentDict["posttime"] = item.posttime
+                    storyArr.append(contentDict)
+                }
+            }
+        }catch{
+            print("haha")
+            print(error)
+        }
+        return storyArr
+    }
     func getStoryCount() -> Int{
         var count: Int = 0
         do{

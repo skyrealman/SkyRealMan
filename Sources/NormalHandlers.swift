@@ -40,7 +40,6 @@ public class PageHandlers{
         let data = dbHandler.getStory(titleSanitized)
         let comments = dbHandler.getComments(by: titleSanitized)
         let commentCount = dbHandler.getCommentCount(by: titleSanitized)
-        print(data)
         if data["title"] == nil{
             context["title"] = "错误"
             context["body"] = "没有找到相关博客"
@@ -69,18 +68,33 @@ public class PageHandlers{
     open static func makeYearList(request: HTTPRequest, response: HTTPResponse){
         var context: [String: Any] = [String: Any]()
         let years: [String] = dbHandler.getBlogYears()
+        let tags = dbHandler.getCategory()
         var contentDict: [String: Any] = [String: Any]()
         for year in years{
             let data = dbHandler.getListForYear(year: year)
-            contentDict["year"] = year
+            contentDict["sign"] = year
             contentDict["blog"] = data
         }
+        context["tags"] = tags
         context["data"] = contentDict
         context["accountID"] = request.user.authDetails?.account.uniqueID ?? ""
         context["authenticated"] = request.user.authenticated
         response.renderWithDate(template: "list", context: context)
     }
-    
+    open static func makeCategoryList(request: HTTPRequest, _ response: HTTPResponse){
+        var context: [String: Any] = [String: Any]()
+        let stag = request.urlVariables["tag"] ?? ""
+        let storyArr = dbHandler.getListForCategory(tag: stag)
+        let tags = dbHandler.getCategory()
+        var contentDict: [String: Any] = [String: Any]()
+        contentDict["sign"] = stag
+        contentDict["blog"] = storyArr
+        context["data"] = contentDict
+        context["tags"] = tags
+        context["accountID"] = request.user.authDetails?.account.uniqueID ?? ""
+        context["authenticated"] = request.user.authenticated
+        response.renderWithDate(template: "list", context: context)
+    }
     open static func insertComment(request: HTTPRequest, _ response: HTTPResponse){
         let titleSanitized = request.urlVariables["titlesanitized"] ?? ""
         let visitor = request.param(name: "visitor") ?? ""

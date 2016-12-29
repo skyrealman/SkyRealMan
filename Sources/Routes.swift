@@ -31,5 +31,6 @@ public func makeRoutes() -> Routes {
     })
     routes.add(method: .post, uri: "/story/{titleSanitized}/comment", handler: PageHandlers.insertComment)
     routes.add(method: .get, uri: "/story/quote/{uniqueid}", handler: PageHandlers.quoteComment)
+    routes.add(method: .get, uri: "/list/{tag}", handler: PageHandlers.makeCategoryList)
     return routes
 }

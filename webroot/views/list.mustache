@@ -1,11 +1,42 @@
 {{>header}}
+<div class="container">
+<div class="row">
+<div class="col-sm-9">
 {{#data}}
-{{year}}
+<ol class="breadcrumb">
+<li><a href="/">首页</a></li>
+<li class= "active">{{sign}}</li>
+</ol>
 <hr>
 {{#blog}}
-{{title}}, {{posttime}}
+<ul>
+<div class = "row">
+<div class="col-sm-7">
+<a href="/story/{{titlesanitized}}">{{title}}</a>
+</div>
+<div class="col-sm-2">
+{{category}}
+</div>
+<div class="col-sm-3">
+{{posttime}}
+</div>
+</ul>
 <hr>
 {{/blog}}
 {{/data}}
+</div>
+<div class="col-sm-3">
+<div class="panel panel-info">
+<div class="panel-heading">分类</div>
+<ul class="list-group">
+{{#tags}}
+<li class="list-group-item borderless"> <a href="/list/{{name}}">{{name}}</a><span class="badge">{{tagcount}}</span></li>
+{{/tags}}
+</ul>
+</div>
+</div>
+</div>
+</div>
+
 
 {{>footer}}

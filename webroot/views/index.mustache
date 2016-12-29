@@ -4,7 +4,7 @@
 <div class="col-sm-9">
 <div id="latest">
 {{#latest}}
-<h4>{{ltitle}}</h4>
+<h4>{{ltitle}}</h4><img src="/img/new.png" height="40" width = "40" style="float: right;">
 <hr>
 {{lsynopsis}}<br><br>
 <div class="row">
@@ -33,7 +33,7 @@
 <div class="panel-heading">分类</div>
 <ul class="list-group">
 {{#tags}}
-<li class="list-group-item borderless"> {{name}}<span class="badge">{{tagcount}}</span></li>
+<li class="list-group-item borderless"> <a href="/list/{{name}}">{{name}}</a><span class="badge">{{tagcount}}</span></li>
 {{/tags}}
 </ul>
 </div>
