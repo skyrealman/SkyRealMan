@@ -7,13 +7,18 @@
 //
 
 import Foundation
-
+#if os(Linux)
+    import CoreFoundation
+    import Glibc
+#endif
 public extension String{
     func transformToLatinStripDiacritics() -> String{
-        let str = NSMutableString(string: self) as CFMutableString
+        let nsStr = NSMutableString(string: self)
+        let str = unsafeBitCast(nsStr, to: CFMutableString.self)
         if CFStringTransform(str, nil, kCFStringTransformToLatin, false){
             if CFStringTransform(str, nil, kCFStringTransformStripDiacritics, false){
-                return str as String
+                let s = String(describing: unsafeBitCast(str, to: NSMutableString.self) as NSString)
+                return s
             }
             return self
         }

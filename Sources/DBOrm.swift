@@ -357,9 +357,9 @@ class DBOrm{
     func deleteStory(_ titlesanitized: String){
         let blog = Blog(connect!)
         do{
-            try blog.select(columns: ["id"], whereclause: "titlesanitized = $1", params: [titlesanitized], orderby: [])
+            try blog.select(columns: ["id"], whereclause: "titlesanitized = :1", params: [titlesanitized], orderby: [])
             for story in blog.rows(){
-                try blog.delete(id: story.id)
+                try blog.delete(story.id)
             }
         }catch{
             print(error)
@@ -603,7 +603,7 @@ class DBOrm{
     func deleteComment(by uniqueID: String){
         do{
             let com = Comment(connect!)
-            try com.delete(id: uniqueID)
+            try com.delete(uniqueID)
         }catch{
             print(error)
         }
@@ -616,7 +616,7 @@ class DBOrm{
             if(blog.rows().count == 1){
                 try com.select(columns: [], whereclause: "blogid = :1", params: [blog.rows()[0].id], orderby: [])
                 for c in com.rows(){
-                    try com.delete(id: c.uniqueID)
+                    try com.delete(c.uniqueID)
                 }
             }
 
@@ -644,7 +644,7 @@ class DBOrm{
                 let attach = Attachment(connect!)
                 try attach.select(columns: [], whereclause: "blogid = :1", params: [blog.rows()[0].id], orderby: [])
                 for a in attach.rows(){
-                    try attach.delete(id: a.uniqueID)
+                    try attach.delete(a.uniqueID)
                 }
             }
             
