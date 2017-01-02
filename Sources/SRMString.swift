@@ -11,14 +11,14 @@ import Foundation
     import CoreFoundation
     import Glibc
 #endif
-public extension String{
+public extension String {
     func transformToLatinStripDiacritics() -> String{
-        let nsStr = NSMutableString(string: self)
-        let str = unsafeBitCast(nsStr, to: CFMutableString.self)
-        if CFStringTransform(str, nil, kCFStringTransformToLatin, false){
-            if CFStringTransform(str, nil, kCFStringTransformStripDiacritics, false){
-                let s = String(describing: unsafeBitCast(str, to: NSMutableString.self) as NSString)
-                return s
+        let chars = Array(self.utf16)
+        let cfStr = CFStringCreateWithCharacters(nil, chars, self.utf16.count)
+        let str = CFStringCreateMutableCopy(nil, 0, cfStr)!
+        if CFStringTransform(str, nil, kCFStringTransformToLatin, false) {
+            if CFStringTransform(str, nil, kCFStringTransformStripDiacritics, false) {
+                return String(describing: str)
             }
             return self
         }
@@ -29,7 +29,7 @@ public extension String{
 public extension Date{
     func getYear() -> Int?{
         let date = Date()
-        let calendar = NSCalendar.current
+        let calendar = Calendar.current
         let dateCom = calendar.dateComponents([.year, .month, .day, .hour, .minute], from: date)
         return dateCom.year
     }

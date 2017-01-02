@@ -7,7 +7,6 @@
 //
 
 import PerfectHTTP
-import Foundation
 import PerfectMustache
 struct OtherFilter: HTTPResponseFilter{
     func filterHeaders(response: HTTPResponse, callback: (HTTPResponseFilterResult) -> ()){
