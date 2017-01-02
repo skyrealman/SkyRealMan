@@ -86,6 +86,7 @@ public class BlogAdmin{
         for key in scratchPad.keys {
             context[key] = scratchPad[key]
         }
+        
         response.renderWithDate(template: "admin/tagmanage", context: context)
     }
     
@@ -153,7 +154,9 @@ public class BlogAdmin{
                 dbHandler.setAttachment(attach: (uniqueID:str[2], oldName: str[1], fileSize: str[0], title.transformToLatinStripDiacritics().slugify()))
             }
         }
-        
+        LogFile.info(title)
+        LogFile.info(tag)
+        LogFile.info(rbody)
         response.redirect(path: "/story/\(title.transformToLatinStripDiacritics().slugify())")
     }
     open static func deleteTag(request: HTTPRequest, _ response: HTTPResponse){

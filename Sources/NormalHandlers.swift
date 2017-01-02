@@ -67,13 +67,15 @@ public class PageHandlers{
     
     open static func makeYearList(request: HTTPRequest, response: HTTPResponse){
         var context: [String: Any] = [String: Any]()
-        let years: [String] = dbHandler.getBlogYears()
+        let years: [String] = dbHandler.getBlogYears().reversed()
         let tags = dbHandler.getCategory()
-        var contentDict: [String: Any] = [String: Any]()
+        var contentDict: [Any] = [Any]()
         for year in years{
+            var tmpDict = [String: Any]();
             let data = dbHandler.getListForYear(year: year)
-            contentDict["sign"] = year
-            contentDict["blog"] = data
+            tmpDict["sign"] = year
+            tmpDict["blog"] = data
+            contentDict.append(tmpDict)
         }
         context["tags"] = tags
         context["data"] = contentDict

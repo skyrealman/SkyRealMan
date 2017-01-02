@@ -150,14 +150,14 @@ class DBOrm{
                 columns: ["title","titlesanitized", "posttime","categoryid","iscomment","istopped"],
                 whereclause: "",
                 params: [],
-                orderby: [],
+                orderby: ["id desc"],
                 cursor: thisCursor,
                 joins: [],
                 having: [],
                 groupBy: [])
             let category = Category(connect!)
             if(blog.rows().count > 0){
-                for (index,item) in blog.rows().reversed().enumerated(){
+                for (index,item) in blog.rows().enumerated(){
                     var contentDict = [String: String]()
                     contentDict["num"] = String(index + 1)
                     contentDict["title"] = item.title
@@ -343,7 +343,7 @@ class DBOrm{
             let authorid = story.userId
             let isTopped = story.isTopped
             let isComment = story.isComment
-            if blog.exists(title){
+            if self.storyExist(title){
                 try blog.select(columns: ["id", "posttime", "authorid"], whereclause: "title = :1", params: [title], orderby: [])
                 try blog.update(cols: ["title","titlesanitized", "synopsis", "body", "posttime", "authorid", "categoryid", "readtimes", "istopped", "iscomment"], params: [title, titlesanitized, synopsis, body, blog.rows()[0].posttime, blog.rows()[0].authorid, tag, 0, isTopped, isComment], idName: "id", idValue: blog.rows()[0].id)
             }else{
@@ -352,6 +352,20 @@ class DBOrm{
 
         }catch{
             print(error)
+        }
+    }
+    func storyExist(_ title: String) -> Bool{
+        do{
+            let blog = Blog(connect!)
+            try blog.select(columns: [], whereclause: "title = :1", params: [title], orderby: [])
+            if blog.rows().count == 1 {
+                return true
+            }else{
+                return false
+            }
+        }catch{
+            print("Exists error: \(error)")
+            return false
         }
     }
     func deleteStory(_ titlesanitized: String){

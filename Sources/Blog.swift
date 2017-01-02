@@ -57,19 +57,6 @@ open class Blog: SQLiteStORM{
         }
     }
     
-    public func exists(_ title: String) -> Bool{
-        do{
-            try select(whereclause: "title = :1", params: [title], orderby: [], cursor: StORMCursor(limit: 1, offset: 0))
-            if results.rows.count == 1{
-                return true
-            }else{
-                return false
-            }
-        }catch{
-            print("Exists error: \(error)")
-            return false
-        }
-    }
 //    func make() throws{
 //        print("IN MAKE")
 //        do{
