@@ -39,5 +39,11 @@ $(function(){
         var str = $("#storybody").val() + "<img src='" + response.file[0].filePath + "' class='aligncenter' width='600'/>"
         $("#storybody").val(str)
     })
+  $("#search").click(function(){
+                     $("#loading").show();
+                     NProgress.start();
+                     NProgress.done();
+                     $("#loading").hide();
+  });
 });
 

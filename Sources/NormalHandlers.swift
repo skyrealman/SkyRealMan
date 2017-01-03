@@ -125,4 +125,12 @@ public class PageHandlers{
         }
         response.completed()
     }
+    open static func makeSearch(request: HTTPRequest, _ response: HTTPResponse){
+        let keyWords = request.urlVariables["key"] ?? ""
+        let keyArr = keyWords.components(separatedBy: " ")
+        let keyArrWithoutBlank = keyArr.filter{$0 != ""}
+        if keyArrWithoutBlank.count > 0 {
+            //多词搜索规则如何组织？
+        }
+    }
 }

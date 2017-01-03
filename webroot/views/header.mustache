@@ -1,19 +1,19 @@
 <html>
     <head>
-<meta http-equiv=Content-Type content="text/html;charset=utf-8">
+        <meta http-equiv=Content-Type content="text/html;charset=utf-8">
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
-<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
-<script src="/js/jquery-3.1.1.min.js"></script>
-<!-- Latest compiled and minified JavaScript -->
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+        <script src="/js/jquery-3.1.1.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
 
-       <link href="/css/jumbotron-narrow.css" rel="stylesheet">
-<link href="/css/fileinput.min.css" rel="stylesheet">
+        <link href="/css/jumbotron-narrow.css" rel="stylesheet">
+        <link href="/css/fileinput.min.css" rel="stylesheet">
+        <link href="/css/nprogress.css" rel="stylesheet">
         <script src="/js/blog.js"></script>
-<link rel="stylesheet" href="/css/fileinput.min.css">
-<script src="/js/fileinput.min.js"></script>
-<script src="/js/zh.js"></script>
-
+        <link rel="stylesheet" href="/css/fileinput.min.css">
+        <script src="/js/fileinput.min.js"></script>
+        <script src="/js/zh.js"></script>
+        <script src="/js/nprogress.js"></script>
         <title>{{webtitle}}</title>
 
     </head>
@@ -33,6 +33,7 @@
 <li role="separator" class="divider"></li>
 <li><a href="#">图片显示</a></li>
 </ul>
+
                 </li>
                 {{^authenticated}}
                 <li role = "presentation"><a href="/login">登录</a></li>
@@ -53,6 +54,14 @@
 <h3 class = "text-muted"><a href="/">{{webtitle}}</a></h3>
 
         </div>
+<div id='loading' type="hidden">
+<div id='facebook' style="margin-left:500px; margin-bottom:15px;" class='marginLeft'>
+<div id='block_1' class='facebook_block'></div>
+<div id='block_2' class='facebook_block'></div>
+<div id='block_3' class='facebook_block'></div>
+<div class='clearfix'></div>
+</div>
+</div>
 {{#flash}}
 <div class = "alert alert-danger" role = "alert">
     <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>

@@ -101,3 +101,6 @@ border-bottom: 0;
 li.borderless{
     border: 0 none;
 }
+#loading{
+    width:100%;
+	}
