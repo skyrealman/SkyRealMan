@@ -144,7 +144,7 @@ public class BlogAdmin{
         let isTopped = request.param(name: "istopped") ?? "0"
         let isComment = request.param(name: "iscomment") ?? "0"
         let userId = request.user.authDetails?.account.uniqueID ?? ""
-        let rbody = body.replacingOccurrences(of: "\n", with: "<br>")
+        let rbody = body
         dbHandler.setStory((title: title, body: rbody, tag: tag, userId: userId, isTopped: isTopped, isComment: isComment))
         
         let params = request.postParams

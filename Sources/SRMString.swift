@@ -40,10 +40,11 @@ public class BlogHelper{
     open static func makeSynopsis(by body: String) -> String{
         var linesArray: [String] = []
         let result = body.replacingOccurrences(of: "<[^>]+>", with: "", options: String.CompareOptions.regularExpression, range: nil)
+        //let to = CharacterSet(charactersIn: "\r")
         linesArray = result.components(separatedBy: "\r")
         //linux中 string没有enumerateLines方法
 //        result.enumerateLines{line, _ in linesArray.append(line)}
-        let synopsis = linesArray.filter{!$0.isEmpty}.joined(separator: "\n")
+        let synopsis = linesArray.filter{!$0.isEmpty}.joined(separator: "\r")
 
         if synopsis.characters.count <= 100{
             return synopsis
@@ -51,5 +52,10 @@ public class BlogHelper{
             let index = synopsis.index(synopsis.startIndex, offsetBy: 100)
             return (synopsis.substring(to: index) + "...")
         }
+    }
+    open static func replace(_ s: String) -> String{
+        let tmp = s.unicodeScalars
+        let result = tmp.filter{$0.value != 10}.reduce(""){ String($0) + String($1)}
+        return result
     }
 }
