@@ -666,8 +666,45 @@ class DBOrm{
             print(error)
         }
     }
-    func getSearchResult(by keys: [String]) -> [String: Any]{
-        var context = [String: Any]()
+    func getSearchResult(by keys: [String]) -> [Any]{
+        var context = [Any]()
+        do{
+            let blog = Blog(connect!)
+            var whereclause = " "
+            for (index, key) in keys.enumerated(){
+                whereclause += "body LIKE '%\(key)%'"
+                if(index != keys.count - 1){
+                    whereclause += " AND "
+                }
+            }
+            try blog.select(whereclause: whereclause, params: [], orderby: [])
+            var tmpIdArr: [Int] = [Int]()
+            var tmpKeyArr: [[String]] = [[String]]()
+            for b in blog.rows(){
+                tmpIdArr.append(b.id)
+                tmpKeyArr.append(keys)
+            }
+            for key in keys{
+                try blog.select(whereclause: "body LIKE '%\(key)%'", params: [], orderby: [])
+                for b in blog.rows(){
+                    if !tmpIdArr.contains(b.id){
+                        tmpIdArr.append(b.id)
+                        tmpKeyArr.append([key])
+                    }
+                }
+            }
+            for (index,id) in tmpIdArr.enumerated(){
+                try blog.select(whereclause: "id = :1", params: [id], orderby: [])
+                var contentDict = [String: Any]()
+                contentDict["stitle"] = blog.title
+                contentDict["stitlesanitized"] = blog.titlesanitized
+                contentDict["sbody"] = BlogHelper.getSearchResult(body: blog.body, keywords: tmpKeyArr[index])
+                context.append(contentDict)
+            }
+            
+        }catch{
+            print("search error: \(error)")
+        }
         return context
     }
 }

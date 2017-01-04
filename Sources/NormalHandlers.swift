@@ -127,10 +127,16 @@ public class PageHandlers{
     }
     open static func makeSearch(request: HTTPRequest, _ response: HTTPResponse){
         response.setHeader(.contentType, value: "application/json")
-        let keyWords = request.urlVariables["key"] ?? ""
-        let keyArr = keyWords.components(separatedBy: " ")
+        let keyWords = request.urlVariables["keys"] ?? ""
+        print(keyWords)
+        let keyArr = keyWords.components(separatedBy: "&")
         let keyArrWithoutBlank = keyArr.filter{$0 != ""}
-        let context = dbHandler.getSearchResult(by: keyArrWithoutBlank)
+        if keyArrWithoutBlank.count > 2{
+            response.renderWithDate(template: "list", context: ["flash": "请输入不超过两个关键字搜索"])
+            return 
+        }
+        let tmp = dbHandler.getSearchResult(by: keyArrWithoutBlank)
+        let context: [String: Any] = ["results": tmp]
         do{
             try response.setBody(json: context)
         }catch{

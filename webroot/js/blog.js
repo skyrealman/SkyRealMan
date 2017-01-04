@@ -42,8 +42,12 @@ $(function(){
   $("#search").click(function(){
                      $("#loading").show();
                      NProgress.start();
-                     NProgress.done();
-                     $("#loading").hide();
+                     var keys = "1234";
+                     $.get("/search/"+keys, function(data){
+                           NProgress.done();
+                           $("#loading").hide();
+                           })
+
   });
 });
 

@@ -64,13 +64,23 @@ public class BlogHelper{
         var tmp = ""
         for key in keywords{
             let index = self.findStartIndex(body: body, key: key, length: 100)
-            if(body[index...body.endIndex].characters.count > 100/keywords.count){
+            if(body[index...body.index(body.endIndex, offsetBy: -1)].characters.count > 100/keywords.count){
                 let str = body[index...body.index(index, offsetBy: 100/keywords.count)]
                 tmp = tmp + str + "... "
             }else{
-                let str = body[body.index(body.endIndex, offsetBy: -1 * (100/keywords.count))...body.endIndex]
+                var str = body[body.index(body.endIndex, offsetBy: -1 * (100/keywords.count))...body.index(body.endIndex, offsetBy: -1)]
+                let dict: [String] = ["\r", "。", "？", "；", "，", "、"]
+                repeat{
+                    if(dict.contains(str.substring(to: str.index(str.startIndex, offsetBy: 1)))){
+                        str = str.substring(from: str.index(str.startIndex, offsetBy: 1))
+                        break
+                    }
+                    str = str[str.index(str.startIndex, offsetBy: 1)...str.index(str.endIndex, offsetBy: -1)]
+                }while(str.startIndex != str.endIndex)
+                
                 tmp = tmp + str + "... "
             }
+           tmp = tmp.replacingOccurrences(of: key, with: "<code>\(key)</code>")
         }
         arr.append(tmp)
         return arr
@@ -82,12 +92,12 @@ public class BlogHelper{
         if(result.contains(key)){
             let eIndex: String.Index = result.range(of: key)!.lowerBound
             let sIndex: String.Index = result.characters.distance(from: result.startIndex, to: eIndex) > length/2  ? result.index(eIndex, offsetBy:  -1 * length/2) : result.startIndex
-            let cut: String = result[result.startIndex...eIndex]
-            let dict: [String] = ["\r", "。", "？", "；", "，"]
+            let dict: [String] = ["\r", "。", "？", "；", "，", "、"]
             if(sIndex != result.startIndex){
+                let tmp: String = result[sIndex...eIndex]
                 for d in dict{
-                    if let idx = cut.range(of: d, options: .backwards)?.upperBound{
-                        start = idx
+                    if let idx = tmp.range(of: d, options: .backwards)?.upperBound{
+                        start = result.index(idx, offsetBy: result.distance(from: result.startIndex, to: sIndex))
                         return start
                     }
                 }
