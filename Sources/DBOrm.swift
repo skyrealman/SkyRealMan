@@ -666,4 +666,8 @@ class DBOrm{
             print(error)
         }
     }
+    func getSearchResult(by keys: [String]) -> [String: Any]{
+        var context = [String: Any]()
+        return context
+    }
 }

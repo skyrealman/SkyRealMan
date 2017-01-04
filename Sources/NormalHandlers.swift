@@ -126,11 +126,16 @@ public class PageHandlers{
         response.completed()
     }
     open static func makeSearch(request: HTTPRequest, _ response: HTTPResponse){
+        response.setHeader(.contentType, value: "application/json")
         let keyWords = request.urlVariables["key"] ?? ""
         let keyArr = keyWords.components(separatedBy: " ")
         let keyArrWithoutBlank = keyArr.filter{$0 != ""}
-        if keyArrWithoutBlank.count > 0 {
-            //多词搜索规则如何组织？
+        let context = dbHandler.getSearchResult(by: keyArrWithoutBlank)
+        do{
+            try response.setBody(json: context)
+        }catch{
+            print("search error: \(error)")
         }
+        response.completed()
     }
 }
