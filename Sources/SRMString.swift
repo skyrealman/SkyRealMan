@@ -60,6 +60,7 @@ public class BlogHelper{
     }
     //获取搜索结果，保证共100字符
     open static func getSearchResult(body: String, keywords: [String]) -> [String]{
+        let body = body.replacingOccurrences(of: "<[^>]+>", with: "", options: String.CompareOptions.regularExpression, range: nil)
         var arr = [String]()
         var tmp = ""
         for key in keywords{

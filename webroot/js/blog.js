@@ -40,10 +40,16 @@ $(function(){
         $("#storybody").val(str)
     })
   $("#search").click(function(){
+                     $("#flash").html("");
                      $("#loading").show();
                      NProgress.start();
-                     var keys = "1234";
+                     var keys = $("#searchtext").val();
                      $.get("/search/"+keys, function(data){
+                           if(data.flash != null){
+                           var content = "<div id='alert' class = 'alert alert-danger' role = 'alert'>" + data.flash + "</div>"
+                            $("#flash").append(content)
+                           }
+                           console.log(data)
                            NProgress.done();
                            $("#loading").hide();
                            })
