@@ -699,6 +699,7 @@ class DBOrm{
                 contentDict["stitle"] = blog.title
                 contentDict["stitlesanitized"] = blog.titlesanitized
                 contentDict["sbody"] = BlogHelper.getSearchResult(body: blog.body, keywords: tmpKeyArr[index])
+                contentDict["sposttime"] = blog.posttime
                 context.append(contentDict)
             }
             

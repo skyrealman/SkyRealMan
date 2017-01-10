@@ -8,12 +8,14 @@
 </span>
 </div><!-- /input-group -->
 <hr>
+<div id="bloglist">
 {{#data}}
 <ol class="breadcrumb">
 <li><a href="/">首页</a></li>
 <li class= "active">{{sign}}</li>
 </ol>
 <hr>
+
 {{#blog}}
 <ul>
 <div class = "row">
@@ -26,10 +28,12 @@
 <div class="col-sm-3">
 {{posttime}}
 </div>
+</div>
 </ul>
 <hr>
 {{/blog}}
 {{/data}}
+</div>
 </div>
 <div class="col-sm-3">
 <div class="panel panel-info">
@@ -41,7 +45,7 @@
 </ul>
 </div>
 </div>
-</div>
 
+</div>
 
 {{>footer}}

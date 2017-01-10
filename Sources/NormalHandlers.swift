@@ -37,6 +37,11 @@ public class PageHandlers{
     open static func makeStoryQuery(request: HTTPRequest, _ response: HTTPResponse){
         var context: [String: Any]  = [String: Any]()
         let titleSanitized = request.urlVariables["titlesanitized"] ?? ""
+        let base64keys = request.urlVariables["keys"] ?? ""
+        print(base64keys)
+        let dataBack = Data(base64Encoded: base64keys)
+        let keys = String(data: dataBack ?? Data(), encoding: String.Encoding.utf8) ?? ""
+        print(keys)
         let data = dbHandler.getStory(titleSanitized)
         let comments = dbHandler.getComments(by: titleSanitized)
         let commentCount = dbHandler.getCommentCount(by: titleSanitized)
@@ -45,17 +50,36 @@ public class PageHandlers{
             context["body"] = "没有找到相关博客"
             context["posttime"] = ""
         }else {
-            context["title"] = data["title"]
-            context["titleSanitized"] = titleSanitized
-            context["body"] = data["body"]
-            context["posttime"] = data["posttime"]
-            context["user_name"] = data["user_name"]
-            context["category_name"] = data["category_name"]
-            context["iscomment"] = data["iscomment"]
-            context["istopped"] = data["istopped"]
-            context["comments"] = comments["comments"]
-            context["commentcount"] = commentCount
-            context["readtimes"] = data["readtimes"]
+            if keys == ""{
+                context["title"] = data["title"]
+                context["titleSanitized"] = titleSanitized
+                context["body"] = data["body"]
+                context["posttime"] = data["posttime"]
+                context["user_name"] = data["user_name"]
+                context["category_name"] = data["category_name"]
+                context["iscomment"] = data["iscomment"]
+                context["istopped"] = data["istopped"]
+                context["comments"] = comments["comments"]
+                context["commentcount"] = commentCount
+                context["readtimes"] = data["readtimes"]
+            }else{
+                let keyArr = keys.split(" ")
+                var tmp = data["body"]
+                for key in keyArr{
+                    tmp = tmp?.replacingOccurrences(of: key, with: "<code>\(key)</code>")
+                }
+                context["title"] = data["title"]
+                context["titleSanitized"] = titleSanitized
+                context["body"] = tmp
+                context["posttime"] = data["posttime"]
+                context["user_name"] = data["user_name"]
+                context["category_name"] = data["category_name"]
+                context["iscomment"] = data["iscomment"]
+                context["istopped"] = data["istopped"]
+                context["comments"] = comments["comments"]
+                context["commentcount"] = commentCount
+                context["readtimes"] = data["readtimes"]
+            }
         }
         context["accountID"] = request.user.authDetails?.account.uniqueID ?? ""
         context["authenticated"] = request.user.authenticated
@@ -99,9 +123,9 @@ public class PageHandlers{
     }
     open static func insertComment(request: HTTPRequest, _ response: HTTPResponse){
         let titleSanitized = request.urlVariables["titlesanitized"] ?? ""
-        let visitor = request.param(name: "visitor") ?? ""
-        let email = request.param(name: "email") ?? ""
-        let cbody = request.param(name: "cbody") ?? ""
+        var visitor = request.param(name: "visitor") ?? ""
+        var email = request.param(name: "email") ?? ""
+        var cbody = request.param(name: "cbody") ?? ""
         guard visitor != "", email != "", cbody != "" else{
             response.request.scratchPad["flash"] = "请输入评论的必要字段"
             makeStoryQuery(request: request, response)
@@ -111,6 +135,9 @@ public class PageHandlers{
         let timeFormatter = DateFormatter()
         timeFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
         let strNowTime = timeFormatter.string(from: date) as String
+        visitor = BlogHelper.filterHTMLTag(key: visitor)
+        email = BlogHelper.filterHTMLTag(key: email)
+        cbody = BlogHelper.filterHTMLTag(key: cbody)
         dbHandler.setComment(comment: (visitor: visitor, email: email, cposttime: strNowTime, cbody: cbody, titleSanitized: titleSanitized, uniqueID: UUID().string))
         response.redirect(path: "/story/\(titleSanitized)")
     }
@@ -128,7 +155,6 @@ public class PageHandlers{
     open static func makeSearch(request: HTTPRequest, _ response: HTTPResponse){
         response.setHeader(.contentType, value: "application/json")
         let keyWords = request.urlVariables["keys"] ?? ""
-        print(keyWords + "haha")
         let keyArr = keyWords.components(separatedBy: " ")
         let keyArrWithoutBlank = keyArr.filter{$0 != ""}
         print(keyArrWithoutBlank.count)

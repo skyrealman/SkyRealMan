@@ -16,7 +16,7 @@ public func makeRoutes() -> Routes {
     routes.add(method: .get, uri: "/", handler: PageHandlers.makeHome)
     routes.add(method: .get, uri: "/list", handler: PageHandlers.makeYearList)
     //列表
-    routes.add(method: .get, uris: ["/story","/story/{titleSanitized}"], handler: PageHandlers.makeStoryQuery)
+    routes.add(method: .get, uris: ["/story","/story/{titleSanitized}","/story/{titleSanitized}/with/{keys}"], handler: PageHandlers.makeStoryQuery)
     routes.add(method: .get, uri: "/files/**", handler: {
         request, response in
         request.path = request.urlVariables[routeTrailingWildcardKey]!

@@ -46,10 +46,26 @@ $(function(){
                      var keys = $("#searchtext").val();
                      $.get("/search/"+keys, function(data){
                            if(data.flash != null){
-                           var content = "<div id='alert' class = 'alert alert-danger' role = 'alert'>" + data.flash + "</div>"
-                            $("#flash").append(content)
-                           }
-                           console.log(data)
+                                var content = "<div id='alert' class = 'alert alert-danger' role = 'alert'>" + data.flash + "</div>"
+                                $("#flash").append(content)
+                           }else{
+                                var res = ""
+                                $("#bloglist").text("")
+                           $("#bloglist").append("<ol class='breadcrumb'><li><a href='/'>首页</a></li><li class= 'active'>搜索结果</li></ol>")
+                                for(var p in data["results"]){
+                                var tmp = "http://" + window.location.host + "/story/" + data["results"][p].stitlesanitized
+                                var location = tmp.substring(0, 50) + "...  " + data["results"][p].sposttime
+                                res += "<ul>"
+                                res += "<a href='/story/"+ data["results"][p].stitlesanitized + "/with/" + $.base64.encode(keys) + "'>" + data["results"][p].stitle + "</a><br>"
+                                res += "<span id='result'>" + data["results"][p].sbody + "</span><br>"
+                                res += "<span id='location'>" + location +"</span></ul>"
+                                res += "<hr>"
+                                console.log(keys)
+                                console.log($.base64.encode(keys))
+                                }
+                                $("#bloglist").append(res)
+                                }
+                          
                            NProgress.done();
                            $("#loading").hide();
                            })

@@ -64,25 +64,34 @@ public class BlogHelper{
         var arr = [String]()
         var tmp = ""
         for key in keywords{
-            let index = self.findStartIndex(body: body, key: key, length: 100)
-            if(body[index...body.index(body.endIndex, offsetBy: -1)].characters.count > 100/keywords.count){
-                let str = body[index...body.index(index, offsetBy: 100/keywords.count)]
-                tmp = tmp + str + "... "
-            }else{
-                var str = body[body.index(body.endIndex, offsetBy: -1 * (100/keywords.count))...body.index(body.endIndex, offsetBy: -1)]
-                let dict: [String] = ["\r", "。", "？", "；", "，", "、"]
-                repeat{
-                    if(dict.contains(str.substring(to: str.index(str.startIndex, offsetBy: 1)))){
-                        str = str.substring(from: str.index(str.startIndex, offsetBy: 1))
-                        break
-                    }
-                    str = str[str.index(str.startIndex, offsetBy: 1)...str.index(str.endIndex, offsetBy: -1)]
-                }while(str.startIndex != str.endIndex)
+            if body.characters.count < 100/keywords.count{
+                tmp = body.replacingOccurrences(of: key, with: "<code>\(key)</code>")
                 
-                tmp = tmp + str + "... "
+            }else{
+                let index = self.findStartIndex(body: body, key: key, length: 100)
+                if(body[index...body.index(body.endIndex, offsetBy: -1)].characters.count > 100/keywords.count){
+                    let str = body[index...body.index(index, offsetBy: 100/keywords.count)]
+                    tmp = tmp + str + "... "
+                }else{
+                    var str = body[body.index(body.endIndex, offsetBy: -1 * (100/keywords.count))...body.index(body.endIndex, offsetBy: -1)]
+                    let dict: [String] = ["\r", "。", "？", "；", "，", "、"]
+                    repeat{
+                        if(dict.contains(str.substring(to: str.index(str.startIndex, offsetBy: 1)))){
+                            str = str.substring(from: str.index(str.startIndex, offsetBy: 1))
+                            break
+                        }
+                        str = str[str.index(str.startIndex, offsetBy: 1)...str.index(str.endIndex, offsetBy: -1)]
+                    }while(str.startIndex != str.endIndex)
+                    
+                    tmp = tmp + str + "... "
+                }
+                tmp = tmp.replacingOccurrences(of: key, with: "<code>\(key)</code>")
             }
-           tmp = tmp.replacingOccurrences(of: key, with: "<code>\(key)</code>")
+            
         }
+        var linesArray: [String] = []
+        linesArray = tmp.components(separatedBy: "\r")
+        tmp = linesArray.filter{!$0.isEmpty}.joined(separator: " ")
         arr.append(tmp)
         return arr
     }
@@ -107,5 +116,13 @@ public class BlogHelper{
             return start
         }
         return start
+    }
+    //过滤评论中部分html标签，防止有游客恶意填入js代码
+    open static func filterHTMLTag(key: String) -> String{
+        if key.contains("<script>") {
+            let comm = key.replacingOccurrences(of: "<script>", with: "").replacingOccurrences(of: "</script>", with: "")
+            return comm
+        }
+        return key
     }
 }

@@ -104,3 +104,10 @@ li.borderless{
 #loading{
     width:100%;
 	}
+#result {
+    color: #A0A0A0;
+}
+#location {
+    color: 009900;
+    font-size: 10px;
+}
