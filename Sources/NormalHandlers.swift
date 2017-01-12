@@ -23,7 +23,7 @@ public class PageHandlers{
             let context: [String: Any] = [
                 "latest": latest,
                 "posts": data,
-                "title": "地盒的博客",
+                "title": "天真男的博客",
                 "accountID": request.user.authDetails?.account.uniqueID ?? "",
                 "authenticated": request.user.authenticated,
                 "tags": tags

@@ -8,7 +8,7 @@
 
 import PerfectHTTP
 import PerfectMustache
-
+import PerfectLib
 
 public func makeRoutes() -> Routes {
     var routes = Routes()
@@ -20,13 +20,13 @@ public func makeRoutes() -> Routes {
     routes.add(method: .get, uri: "/files/**", handler: {
         request, response in
         request.path = request.urlVariables[routeTrailingWildcardKey]!
-        let handler = StaticFileHandler(documentRoot: "/Users/songzhen/Documents/swift/perfect/skyrealman/webroot/img")
+        let handler = StaticFileHandler(documentRoot: server.documentRoot + "/img")
         handler.handleRequest(request: request, response: response)
     })
     routes.add(method: .get, uri: "/attachment/**", handler: {
         request, response in
         request.path = request.urlVariables[routeTrailingWildcardKey]!
-        let handler = StaticFileHandler(documentRoot: "/Users/songzhen/Documents/swift/perfect/skyrealman/files/")
+        let handler = StaticFileHandler(documentRoot: Dir.workingDir.path + "/files/")
         handler.handleRequest(request: request, response: response)
     })
     routes.add(method: .post, uri: "/story/{titleSanitized}/comment", handler: PageHandlers.insertComment)
