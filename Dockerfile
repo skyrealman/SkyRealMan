@@ -1,0 +1,1 @@
+FROM perfectlysoft/perfectassistant
