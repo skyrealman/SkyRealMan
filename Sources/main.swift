@@ -24,11 +24,11 @@ LogFile.location = "./log.txt"
 LogFile.info("==========服务器启动==========")
 
 #if os(Linux)
-    let fileRoot = "~/文档/swift/perfect/skyrealman/SkyRealMan/"
+    let fileRoot = "."
     var httpPort = 8181
     RequestLogFile.location = "./webLog.log"
 #else
-    let fileRoot = ""
+    let fileRoot = "."
     var httpPort = 8181
     RequestLogFile.location = "./webLog.log"
 #endif

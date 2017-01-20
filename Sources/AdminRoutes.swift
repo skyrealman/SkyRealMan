@@ -40,8 +40,8 @@ public func makeAdminRoutes() -> Routes{
     
     routes.add(method: .get, uri: "/logout", handler: AuthHandlersWeb.logoutHandler)
     
-    routes.add(method: .get, uri: "/register", handler: BlogAdmin.makeRegisterGET)
-    routes.add(method: .post, uri: "/register", handler: BlogAdmin.makeRegisterPOST)
+    //routes.add(method: .get, uri: "/register", handler: BlogAdmin.makeRegisterGET)
+    //routes.add(method: .post, uri: "/register", handler: BlogAdmin.makeRegisterPOST)
     routes.add(method: .get, uri: "/admin/tagmanage/delete/{tag}", handler: BlogAdmin.deleteTag)
     routes.add(method: .get, uris: ["/admin/tagmanage/edit/{oldtag}/{newtag}","/admin/tagmanage/edit/{oldtag}/"], handler: BlogAdmin.editTag)
     routes.add(method: .get, uri: "/admin/storymanage", handler: BlogAdmin.makeManageList)
