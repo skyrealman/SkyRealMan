@@ -283,10 +283,12 @@ public class BlogAdmin{
             response.completed()
         }
     }
-    open static func deleteFile(request: HTTPRequest, _ response: HTTPResponse){
+    open static func deleteAttachment(request: HTTPRequest, _ response: HTTPResponse){
         let fileDir = Dir(Dir.workingDir.path + "files")
         if fileDir.exists{
             //想想怎么写
+            
         }
+        response.setHeader(.contentType, value: "application/json")
     }
 }

@@ -36,7 +36,7 @@ $(function(){
         content += value
         content += "'>"
         $("#attachdata").append(content)
-        var str = $("#storybody").val() + "<img src='" + response.file[0].filePath + "' class='aligncenter' width='600'/>"
+        var str = $("#storybody").val() + "<img class='img-responsive aligncenter' src='" + response.file[0].filePath + "' width='80%' />"
         $("#storybody").val(str)
     })
   $("#search").click(function(){
